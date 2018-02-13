@@ -11,6 +11,7 @@ Blackjack.GameState = {
                             ['heart2', 'heart3', 'heart4', 'heart5', 'heart6', 'heart7', 'heart8', 'heart9', 'heart10', 'heartJ', 'heartQ', 'heartK', 'heartA'],
                             ['spade2', 'spade3', 'spade4', 'spade5', 'spade6', 'spade7', 'spade8', 'spade9', 'spade10', 'spadeJ', 'spadeQ', 'spadeK', 'spadeA']
                          ];
+        this.cardArray = this.createCards(this.cardArray);
         
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
@@ -175,6 +176,19 @@ Blackjack.GameState = {
         {
             //check card values for over 21
         }
+    },
+    createCards: function(cardArr)
+    {
+        for(var i=0, len = cardArr.length; i<len; i++)
+        {
+            for(var j=0, secLen = cardArr[i].length; j<secLen; j++)
+            {
+                var card = new Blackjack.Card(this);
+                card.init(cardArr[i][j]);
+                cardArr[i][j] = card;
+            }
+        }
+        return cardArr;
     },
     update: function ()
     {
