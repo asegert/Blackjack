@@ -7,6 +7,12 @@ GameName.PreloadState = {
         var preloadProgress = this.add.sprite((this.world.width - 540) * 0.5, (this.world.height + 170) * 0.5, 'loading-progress');
         this.load.setPreloadSprite(preloadProgress);
 
+        this.load.image('background', 'assets/images/background.png');
+        
+        this.load.image('hitMe', 'assets/images/hitMe.png');
+        this.load.image('call', 'assets/images/call.png');
+        
+        
         this.load.image('diamond2', 'assets/images/cardDiamonds2.png');
         this.load.image('diamond3', 'assets/images/cardDiamonds3.png');
         this.load.image('diamond4', 'assets/images/cardDiamonds4.png');
