@@ -1,6 +1,6 @@
-var GameName = GameName || {};
+var Blackjack = Blackjack || {};
 
-GameName.StoryState = {
+Blackjack.StoryState = {
     create: function ()
     {
         this.game.state.start('Game');

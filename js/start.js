@@ -1,4 +1,4 @@
-var GameName = GameName || {};//replace with game name variable
+var Blackjack = Blackjack || {};//replace with game name variable
 
 if(Phaser.Device.ie) //Checks that internet explorer is being used
 {
@@ -12,28 +12,28 @@ if(Phaser.Device.ie) //Checks that internet explorer is being used
     }
     else
     {
-        GameName.game = new Phaser.Game(960, 640, Phaser.AUTO);
+        Blackjack.game = new Phaser.Game(960, 640, Phaser.AUTO);
 
-        GameName.game.state.add('Cache', GameName.CacheState);
-        GameName.game.state.add('Boot', GameName.BootState); 
-        GameName.game.state.add('Preload', GameName.PreloadState); 
-        GameName.game.state.add('Game', GameName.GameState);
-        GameName.game.state.add('Story', GameName.StoryState);
+        Blackjack.game.state.add('Cache', Blackjack.CacheState);
+        Blackjack.game.state.add('Boot', Blackjack.BootState); 
+        Blackjack.game.state.add('Preload', Blackjack.PreloadState); 
+        Blackjack.game.state.add('Game', Blackjack.GameState);
+        Blackjack.game.state.add('Story', Blackjack.StoryState);
 
-        GameName.game.state.start('Cache'); 
+        Blackjack.game.state.start('Cache'); 
     }
 }
 else
 {
-    GameName.game = new Phaser.Game(960, 640, Phaser.AUTO);
+    Blackjack.game = new Phaser.Game(960, 640, Phaser.AUTO);
 
-    GameName.game.state.add('Cache', GameName.CacheState);
-    GameName.game.state.add('Boot', GameName.BootState); 
-    GameName.game.state.add('Preload', GameName.PreloadState); 
-    GameName.game.state.add('Game', GameName.GameState);
-    GameName.game.state.add('Story', GameName.StoryState);
+    Blackjack.game.state.add('Cache', Blackjack.CacheState);
+    Blackjack.game.state.add('Boot', Blackjack.BootState); 
+    Blackjack.game.state.add('Preload', Blackjack.PreloadState); 
+    Blackjack.game.state.add('Game', Blackjack.GameState);
+    Blackjack.game.state.add('Story', Blackjack.StoryState);
 
-    GameName.game.state.start('Cache');
+    Blackjack.game.state.start('Cache');
 }
 /*Copyright (C) Wayside Co. - All Rights Reserved
 * Unauthorized copying of this file, via any medium is strictly prohibited

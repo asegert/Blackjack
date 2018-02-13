@@ -1,6 +1,6 @@
-var GameName = GameName || {};
+var Blackjack = Blackjack || {};
 
-GameName.PreloadState = {
+Blackjack.PreloadState = {
     preload: function ()
     {
         var preloadBG = this.add.sprite((this.world.width - 580) * 0.5, (this.world.height + 150) * 0.5, 'loading-background');
