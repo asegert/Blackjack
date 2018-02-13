@@ -1,6 +1,6 @@
-var GameName = GameName || {};
+var Blackjack = Blackjack || {};
 
-GameName.BootState = {
+Blackjack.BootState = {
 	preload: function(){
 		this.stage.backgroundColor = '#ffffff';
 		this.load.image('loading-background', 'assets/images/loading-background.png');

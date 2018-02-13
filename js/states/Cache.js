@@ -1,6 +1,6 @@
-var GameName = GameName || {};
+var Blackjack = Blackjack || {};
 
-GameName.CacheState = {
+Blackjack.CacheState = {
 
     create: function ()
     {
