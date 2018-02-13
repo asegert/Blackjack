@@ -43,6 +43,13 @@ Blackjack.GameState = {
         this.call = this.add.button(50, 535, 'call', function()
         {
             //deal out and end
+            while(this.dealerHand.length < 3)
+            {
+                this.deal(false);
+                this.displayCards('dealer');
+                this.checkPlay('dealer');
+            }
+            //Check if higher than dealer
         }, this);
     },
     preShuffle: function()
@@ -188,11 +195,23 @@ Blackjack.GameState = {
         if(party == 'dealer')
         {
             var dealerValue = 0;
+            var eleven = false;
             
             for(var i=0, len = this.dealerHand.length; i<len; i++)
             {
                 dealerValue = dealerValue + this.dealerHand[i].value;
+                
+                if(this.dealerHand[i].value == 1)
+                {
+                    eleven = true;
+                }
             }
+            
+            if(eleven && (dealerValue + 10) <= 21)
+                {
+                    dealerValue = dealerValue + 10;
+                    eleven = false;
+                }
 
             if(dealerValue > 21)
             {
@@ -200,9 +219,22 @@ Blackjack.GameState = {
             }
             else if(this.dealerHand.length > 2 && dealerValue < 16)
             {
-                this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
-                this.dealerHand[3].addSprite(800, 100);
-                this.checkPlay(party);
+                //If an ace is one of the cards check if adding 10 as ace is 1 or 11 will get it in the right margin, otherwise continue adding the additional card
+                if(eleven)
+                {
+                    if(dealerValue + 10 > 21 || dealerValue + 10 < 16)
+                    {
+                        this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+                        this.dealerHand[3].addSprite(800, 100);
+                        this.checkPlay(party);
+                    }
+                }
+                else
+                {
+                    this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+                    this.dealerHand[3].addSprite(800, 100);
+                    this.checkPlay(party);
+                }
             }
         }
     },
