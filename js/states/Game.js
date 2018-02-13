@@ -22,7 +22,8 @@ Blackjack.GameState = {
         
         this.hitMe = this.add.button(50, 470, 'hitMe', function()
         {
-            //deal a card
+            this.deal(false);
+            this.checkPlay('dealer');
         }, this);
         
         this.call = this.add.button(50, 535, 'call', function()
@@ -160,6 +161,19 @@ Blackjack.GameState = {
             retArr[1] = dealer;
             
             return retArr;
+        }
+        else
+        {
+            this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+            //Call for animation flip to show card and add card to dealer total-> make appropriate move
+            return null;
+        }
+    },
+    checkPlay: function(party)
+    {
+        if(party == 'dealer')
+        {
+            //check card values for over 21
         }
     },
     update: function ()
