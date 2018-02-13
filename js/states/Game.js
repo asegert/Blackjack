@@ -20,11 +20,24 @@ Blackjack.GameState = {
         this.playerCards = this.deal(true);
         this.dealerCards = this.playerCards[1];
         this.playerCards = this.playerCards[0];
+        this.dealer1;
+        this.dealer2;
+        this.dealer3;
+        
+        this.deal(false);
+        this.displayCards('dealer');
+        this.checkPlay('dealer');
         
         this.hitMe = this.add.button(50, 470, 'hitMe', function()
         {
-            this.deal(false);
-            this.checkPlay('dealer');
+            //Add player hit me here
+            //If dealer has played all cards don't play another
+            if(this.dealerHand.length < 3)
+            {
+                this.deal(false);
+                this.displayCards('dealer');
+                this.checkPlay('dealer');
+            }
         }, this);
         
         this.call = this.add.button(50, 535, 'call', function()
@@ -143,7 +156,7 @@ Blackjack.GameState = {
         if(initDeal)
         {
             var player = new Array(5);
-            var dealer = new Array(this.cardArray.length - 5);
+            var dealer = new Array(this.cardArray.length - 2);
             
             for(var i=0, len = this.cardArray.length; i<len; i++)
             {
@@ -153,7 +166,7 @@ Blackjack.GameState = {
                 }
                 else
                 {
-                    dealer[i-5] = this.cardArray[i];
+                    dealer[i-2] = this.cardArray[i];
                 }
             }
             
@@ -174,7 +187,23 @@ Blackjack.GameState = {
     {
         if(party == 'dealer')
         {
-            //check card values for over 21
+            var dealerValue = 0;
+            
+            for(var i=0, len = this.dealerHand.length; i<len; i++)
+            {
+                dealerValue = dealerValue + this.dealerHand[i].value;
+            }
+
+            if(dealerValue > 21)
+            {
+                console.log('Bust');
+            }
+            else if(this.dealerHand.length > 2 && dealerValue < 16)
+            {
+                this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+                this.dealerHand[3].addSprite(800, 100);
+                this.checkPlay(party);
+            }
         }
     },
     createCards: function(cardArr)
@@ -189,6 +218,43 @@ Blackjack.GameState = {
             }
         }
         return cardArr;
+    },
+    displayCards: function(party)
+    {
+        if(party == 'dealer')
+        {
+            if(this.dealer1 != undefined)
+            {
+                this.dealer1.destroy();
+                this.dealer2.destroy();
+                this.dealer3.destroy();
+            }
+            
+            if(this.dealerHand[0] != undefined)
+            {
+                this.dealerHand[0].addSprite(200, 100);
+            }
+            else
+            {
+                this.dealer1 = this.add.sprite(200, 100, 'cardBack');
+            }
+            if(this.dealerHand[1] != undefined)
+            {
+                this.dealerHand[1].addSprite(400, 100);
+            }
+            else
+            {
+                this.dealer2 = this.add.sprite(400, 100, 'cardBack');
+            }
+            if(this.dealerHand[2] != undefined)
+            {
+                this.dealerHand[2].addSprite(600, 100);
+            }
+            else
+            {
+                this.dealer3 = this.add.sprite(600, 100, 'cardBack');
+            }
+        }
     },
     update: function ()
     {

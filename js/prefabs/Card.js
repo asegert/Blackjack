@@ -12,6 +12,7 @@ Blackjack.Card = function(state) {
          this.texture = texture;
          this.suit = this.suit(texture);
          this.value = this.value(texture, this.suit);
+         this.sprite = null;
      };
      Blackjack.Card.prototype.suit = function(textureString)
      {
@@ -40,7 +41,7 @@ Blackjack.Card = function(state) {
          {
              if(num == "A")
              {
-                 return 11;
+                 return 1;
              }
              else
              {
@@ -51,6 +52,10 @@ Blackjack.Card = function(state) {
         {
             return parseInt(num);
         }
+     };
+     Blackjack.Card.prototype.addSprite = function(x, y)
+     {
+         this.sprite = this.state.add.sprite(x, y, this.texture);
      };
 };
     
