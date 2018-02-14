@@ -15,29 +15,38 @@ Blackjack.GameState = {
         
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
-        this.playerHand = new Array();//group?
-        this.dealerHand = new Array();//group?
-        this.playerCards = this.deal(true);
+        this.dealerHand = new Array();
+        this.playerCards = this.deal(true, false, false);
         this.dealerCards = this.playerCards[1];
         this.playerCards = this.playerCards[0];
+        this.standing = false;
+        this.dealerBusted = false;
+        this.playerBusted = false;
         this.dealer1;
         this.dealer2;
         this.dealer3;
         
-        this.deal(false);
+        this.deal(false, false, true);
         this.displayCards('dealer');
         this.checkPlay('dealer');
+        this.displayCards('player');
         
         this.hitMe = this.add.button(50, 470, 'hitMe', function()
         {
-            //Add player hit me here
             //If dealer has played all cards don't play another
             if(this.dealerHand.length < 3)
             {
-                this.deal(false);
+                //player always gets a card
+                this.deal(false, true, true);
                 this.displayCards('dealer');
                 this.checkPlay('dealer');
             }
+            else
+            {
+                this.deal(false, true, false);
+            }
+            this.displayCards('player');
+            this.checkPlay('player');
         }, this);
         
         this.call = this.add.button(50, 535, 'call', function()
@@ -45,7 +54,7 @@ Blackjack.GameState = {
             //deal out and end
             while(this.dealerHand.length < 3)
             {
-                this.deal(false);
+                this.deal(false, false, true);
                 this.displayCards('dealer');
                 this.checkPlay('dealer');
             }
@@ -158,16 +167,16 @@ Blackjack.GameState = {
         }
         return retArr;
     },
-    deal: function(initDeal)
+    deal: function(initDeal, playerDeal, dealerDeal)
     {
         if(initDeal)
         {
-            var player = new Array(5);
+            var player = new Array(2);
             var dealer = new Array(this.cardArray.length - 2);
             
             for(var i=0, len = this.cardArray.length; i<len; i++)
             {
-                if(i<5)
+                if(i<2)
                 {
                     player[i]=this.cardArray[i];
                 }
@@ -185,12 +194,20 @@ Blackjack.GameState = {
         }
         else
         {
-            this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+            if(playerDeal)
+            {
+                this.playerCards[this.playerCards.length] = this.dealerCards.pop();
+            }
+            
+            if(dealerDeal)
+            {
+                this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+            }
             //Call for animation flip to show card and add card to dealer total-> make appropriate move
             return null;
         }
     },
-    checkPlay: function(party)
+    checkPlay: function(party)//fix run time with compound value
     {
         if(party == 'dealer')
         {
@@ -215,6 +232,7 @@ Blackjack.GameState = {
 
             if(dealerValue > 21)
             {
+                this.dealerBusted = true;
                 console.log('Bust');
             }
             else if(this.dealerHand.length > 2 && dealerValue < 16)
@@ -235,6 +253,21 @@ Blackjack.GameState = {
                     this.dealerHand[3].addSprite(800, 100);
                     this.checkPlay(party);
                 }
+            }
+        }
+        else if(party == 'player')
+        {
+            var playerValue = 0;
+            
+            for(var i=0, len = this.playerCards.length; i<len; i++)
+            {
+                playerValue = playerValue + this.playerCards[i].value;
+            }
+            
+            if(playerValue > 21)
+            {
+                this.playerBusted = true;
+                console.log('Bust');
             }
         }
     },
@@ -285,6 +318,20 @@ Blackjack.GameState = {
             else
             {
                 this.dealer3 = this.add.sprite(600, 100, 'cardBack');
+            }
+        }
+        else if(party == 'player')
+        {
+            for(var i=0, len = this.playerCards.length; i<len; i++)
+            {
+                if(this.playerCards[i] == undefined)
+                {
+                    break;
+                }
+                else
+                {
+                    this.playerCards[i].addSprite(200 + (50 * i), 400);
+                }
             }
         }
     },
