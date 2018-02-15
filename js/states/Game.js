@@ -6,7 +6,7 @@ Blackjack.GameState = {
         this.background = this.add.sprite(0, 0, 'background');
         this.deck = this.add.sprite(50, 200, 'deck');
         this.dealer = this.add.sprite(50, 0, 'dealer');
-        
+
         this.cardArray = [
                             ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
                             ['club2', 'club3', 'club4', 'club5', 'club6', 'club7', 'club8', 'club9', 'club10', 'clubJ', 'clubQ', 'clubK', 'clubA'],
@@ -300,8 +300,14 @@ console.log(this.currentDealerValue);
                 }
                 else
                 {
+                    console.log('a');
                     this.processEndGame();
                 }
+            }
+            else if(this.dealerHand.length > 2 && this.currentDealerValue >= 16)
+            {
+                console.log('b');
+                this.processEndGame();
             }
             else if(this.dealerHand.length > 2 && this.currentDealerValue < 16)
             {
@@ -314,10 +320,17 @@ console.log(this.currentDealerValue);
                         this.deal(false, false, true);
                         this.checkPlay('dealer', 1);
                         this.displayCards('dealer');
+                        
+                        if(this.dealerHand.length > 2 && this.currentDealerValue + 10 >= 16)
+                        {
+                            console.log('i');
+                            this.processEndGame();
+                        }
                     }
                 }
                 else if(this.playerBusted)
                 {
+                    console.log('c');
                     this.processEndGame();
                 }
                 else
@@ -329,6 +342,7 @@ console.log(this.currentDealerValue);
             }
             else if(this.playerBusted)
             {
+                console.log('d');
                 this.processEndGame();
             }
  /*           else if(this.standing && this.dealerHand.length < 3)
@@ -381,11 +395,13 @@ console.log(this.currentDealerValue);
                 }
                 else
                 {
+                    console.log('e');
                     this.processEndGame();
                 }
             }
             else if(this.currentPlayerValue === 21)
             {
+                this.twentyOneAnimation('21', true, false, 5000, false, 1);
                 while(this.dealerHand.length < 3)
                 {
                     this.deal(false, false, true);
@@ -395,11 +411,29 @@ console.log(this.currentDealerValue);
                 //Check if higher than dealer
                 if(!this.gameOver)
                 {
+                    console.log('f');
+                    this.processEndGame();
+                }
+            }
+            else if(this.currentPlayerValue === 11 && this.playerEleven)
+            {
+                this.twentyOneAnimation('21', true, false, 5000, false, 1);
+                while(this.dealerHand.length < 3)
+                {
+                    this.deal(false, false, true);
+                    this.displayCards('dealer');
+                    this.checkPlay('dealer', 1);
+                }
+                //Check if higher than dealer
+                if(!this.gameOver)
+                {
+                    console.log('g');
                     this.processEndGame();
                 }
             }
             else if(this.dealerBusted)
             {
+                console.log('h');
                 this.processEndGame();
             }
         }
@@ -644,14 +678,17 @@ console.log(this.currentDealerValue);
         
         if(this.playerBusted && this.dealerBusted)
         {
+            this.twentyOneAnimation('Both Bust! \nTie!', true, true, 5000, true, 2);
             console.log('Both Bust! \nTie!');
         }
         else if(this.playerBusted)
         {
+            this.twentyOneAnimation('Player Busted. \nDealer Wins!', true, true, 5000, true, 2);
             console.log('Player Busted. \nDealer Wins!');
         }
         else if(this.dealerBusted)
         {
+            this.twentyOneAnimation('Dealer Busted. \nPlayer Wins!', true, true, 5000, true, 2);
             console.log('Dealer Busted. \nPlayer Wins!');
         }
         else
@@ -669,21 +706,90 @@ console.log(this.currentDealerValue);
             
             if(this.currentDealerValue > this.currentPlayerValue)
             {
+                this.twentyOneAnimation("Dealer Wins!", true, true, 5000, true, 2);
                 console.log("Dealer Wins!");
             }
             else if( this.currentDealerValue < this.currentPlayerValue)
             {
+                this.twentyOneAnimation("Player Wins!", true, true, 5000, true, 2);
                 console.log("Player Wins!");
             }
             else if(this.currentDealerValue === this.currentPlayerValue)
             {
+                this.twentyOneAnimation("Tie!", true, true, 5000, true, 2);
                 console.log("Tie!");
             }
             else
             {
+                this.twentyOneAnimation("Player Wins!", true, true, 5000, true, 2);
                 console.log("Player Wins By Default!");
             }
         }
+    },
+    twentyOneAnimation: function(tex, destroy, final, time, string, scale)
+    {
+        var emitters = this.add.group();
+        
+        if(final)
+        {
+            var emit1 = this.createEmitter(100, -10, 'blackChip', true, 0.3);
+            var emit2 = this.createEmitter(300, -10, 'blueChip', true, 0.3);
+            var emit3 = this.createEmitter(450, -10, 'redChip', true, 0.3);
+            var emit4 = this.createEmitter(600, -10, 'greenChip', true, 0.3);
+            var emit5 = this.createEmitter(900, -10, 'whiteChip', true, 0.3);
+            
+            emitters.add(emit1);
+            emitters.add(emit2);
+            emitters.add(emit3);
+            emitters.add(emit4);
+            emitters.add(emit5);
+        }
+        else
+        {
+            console.log(emitters);
+            
+            emit1 = this.createEmitter(100, -10, 'solidBlueChip', true, 0.3);
+            emit2 = this.createEmitter(450, -10, 'solidWhiteChip', true, 0.3);
+            emit3 = this.createEmitter(900, -10, 'solidGreenChip', true, 0.3);
+            
+            emitters.add(emit1);
+            emitters.add(emit2);
+            emitters.add(emit3);
+        }
+        if(string)
+        {
+            var twentyOne = this.add.text(this.world.centerX, this.world.centerY, tex);
+        }
+        else
+        {
+            var twentyOne = this.add.sprite(this.world.centerX, this.world.centerY, tex);
+        }
+        
+        twentyOne.anchor.setTo(0.5, 0.5);
+        twentyOne.scale.setTo(0, 0);
+        var tween = this.add.tween(twentyOne.scale).to({x: scale, y: scale}, time, "Linear", true);
+        this.world.bringToTop(twentyOne);
+        tween.onComplete.add(function()
+        {
+            if(destroy)
+                twentyOne.destroy();
+            emitters.removeAll();
+        }, this);
+    },
+    createEmitter: function(x, y, tex, sprite, scale)
+    {
+        var emitter = this.add.emitter(x, y, 200);
+        
+        if(sprite)
+            emitter.makeParticles(tex, [0, 1, 2, 3, 4]);
+        else
+            emitter.makeParticles(tex);
+        emitter.minParticleScale = scale;
+        emitter.maxParticleScale = scale;
+        
+        emitter.start(false, 5000, 20);
+        
+        return emitter;
     },
     chipFlip: function(chip)
     {
