@@ -102,11 +102,6 @@ Blackjack.GameState = {
                 this.checkPlay('dealer', 1);
                 this.displayCards('dealer');
             }
-            //Check if higher than dealer
-            if(!this.gameOver)
-            {
-                this.processEndGame();
-            }
         }, this);
     },
     preShuffle: function()
@@ -316,9 +311,9 @@ console.log(this.currentDealerValue);
                     //If using the ace as an eleven will bust the dealer or still keep the dealer below 16
                     if(this.currentDealerValue + 10 > 22 || this.currentDealerValue + 10 < 16)
                     {
-                        this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
-                        this.dealerHand[this.dealerHand.length-1].addSprite(800, 100);
-                        this.checkPlay(party, 1);
+                        this.deal(false, false, true);
+                        this.checkPlay('dealer', 1);
+                        this.displayCards('dealer');
                     }
                 }
                 else if(this.playerBusted)
@@ -327,15 +322,21 @@ console.log(this.currentDealerValue);
                 }
                 else
                 {
-                    this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
-                    this.dealerHand[this.dealerHand.length-1].addSprite(800, 100);
-                    this.checkPlay(party, 1);
+                    this.deal(false, false, true);
+                    this.checkPlay('dealer', 1);
+                    this.displayCards('dealer');
                 }
             }
             else if(this.playerBusted)
             {
                 this.processEndGame();
             }
+ /*           else if(this.standing && this.dealerHand.length < 3)
+            {
+                this.deal(false, false, true);
+                this.checkPlay('dealer', 1);
+                this.displayCards('dealer');
+            }*/
         }
         else if(party == 'player')
         {
@@ -369,7 +370,7 @@ console.log(this.currentDealerValue);
                     this.currentPlayerValue = tempValue;
                 }
             }
-
+            
             if(this.currentPlayerValue > 21)
             {
                 this.playerBusted = true;
@@ -478,10 +479,10 @@ console.log(this.currentDealerValue);
             
             if(this.dealerHand[1] != undefined && this.dealerHand[1].sprite === null)
             {
-                temp = this.add.sprite(500, 200, 'cardBack');
+                temp = this.add.sprite(480, 200, 'cardBack');
                 temp.anchor.setTo(0.5, 0.5);
                 
-                this.dealerHand[1].addSprite(500, 200);
+                this.dealerHand[1].addSprite(480, 200);
                 this.dealerHand[1].sprite.scale.setTo(0, 1);
                 this.dealerHand[1].sprite.anchor.setTo(0.5, 0.5);
                 
@@ -515,16 +516,16 @@ console.log(this.currentDealerValue);
             }
             else if(this.dealerHand[1] === undefined)
             {
-                this.dealer2 = this.add.sprite(500, 200, 'cardBack');
+                this.dealer2 = this.add.sprite(480, 200, 'cardBack');
                 this.dealer2.anchor.setTo(0.5, 0.5);
             }
             
             if(this.dealerHand[2] != undefined && this.dealerHand[2].sprite === null)
             {
-                temp = this.add.sprite(700, 200, 'cardBack');
+                temp = this.add.sprite(660, 200, 'cardBack');
                 temp.anchor.setTo(0.5, 0.5);
                 
-                this.dealerHand[2].addSprite(700, 200);
+                this.dealerHand[2].addSprite(660, 200);
                 this.dealerHand[2].sprite.scale.setTo(0, 1);
                 this.dealerHand[2].sprite.anchor.setTo(0.5, 0.5);
                 
@@ -558,8 +559,37 @@ console.log(this.currentDealerValue);
             }
             else if(this.dealerHand[2] === undefined)
             {
-                this.dealer3 = this.add.sprite(700, 200, 'cardBack');
+                this.dealer3 = this.add.sprite(660, 200, 'cardBack');
                 this.dealer3.anchor.setTo(0.5, 0.5);
+            }
+            else
+            {
+                if(this.dealerHand[3] != undefined && this.dealerHand[3].sprite === null)
+                {
+                    temp = this.add.sprite(840, 200, 'cardBack');
+                    temp.anchor.setTo(0.5, 0.5);
+                
+                    this.dealerHand[3].addSprite(840, 200);
+                    this.dealerHand[3].sprite.scale.setTo(0, 1);
+                    this.dealerHand[3].sprite.anchor.setTo(0.5, 0.5);
+                
+                    this.world.bringToTop(this.dealer);
+                
+                    handTween = this.add.tween(this.dealer).to({x: 800}, 800, "Linear");
+                    backFlip = this.add.tween(temp.scale).to({x: 0}, 300, "Linear");
+                    frontFlip = this.add.tween(this.dealerHand[3].sprite.scale).to({x: 1}, 300, "Linear");
+                    retHand = this.add.tween(this.dealer).to({x: 50}, 800, "Linear");
+                    retHand.onComplete.add(function()
+                    {
+                        this.input.enabled = true;
+                    }, this);
+                
+                    handTween.chain(backFlip);
+                    backFlip.chain(frontFlip);
+                    frontFlip.chain(retHand);
+                
+                    handTween.start();
+                }
             }
         }
         else if(party == 'player')
