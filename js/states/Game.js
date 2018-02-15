@@ -4,6 +4,8 @@ Blackjack.GameState = {
     create: function ()
     {
         this.background = this.add.sprite(0, 0, 'background');
+        this.deck = this.add.sprite(50, 200, 'deck');
+        this.dealer = this.add.sprite(50, 0, 'dealer');
         
         this.cardArray = [
                             ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
@@ -13,6 +15,38 @@ Blackjack.GameState = {
                          ];
         this.cardArray = this.createCards(this.cardArray);
         
+        this.blackChip = this.add.button(650, 425, 'blackChip', this.chipFlip, this);
+        this.blackChip.animations.add('flip');
+        this.blackChip.play('flip', 10, true);
+        
+        this.whiteChip = this.add.button(725, 425, 'whiteChip', this.chipFlip, this);
+        this.whiteChip.animations.add('flip');
+        this.whiteChip.play('flip', 12, true);
+        
+        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
+        this.greenChip.animations.add('flip');
+        this.greenChip.play('flip', 11, true);
+        
+        this.blueChip = this.add.button(800, 425, 'blueChip', this.chipFlip, this);
+        this.blueChip.animations.add('flip');
+        this.blueChip.play('flip', 12, true);
+        
+        this.redChip = this.add.button(650, 500, 'redChip', this.chipFlip, this);
+        this.redChip.animations.add('flip');
+        this.redChip.play('flip', 10, true);
+        
+        this.solidWhiteChip = this.add.button(725, 500, 'solidWhiteChip', this.chipFlip, this);
+        this.solidWhiteChip.animations.add('flip');
+        this.solidWhiteChip.play('flip', 11, true);
+        
+        this.solidBlueChip = this.add.button(800, 500, 'solidBlueChip', this.chipFlip, this);
+        this.solidBlueChip.animations.add('flip');
+        this.solidBlueChip.play('flip', 10, true);
+        
+        this.solidGreenChip = this.add.button(875, 500, 'solidGreenChip', this.chipFlip, this);
+        this.solidGreenChip.animations.add('flip');
+        this.solidGreenChip.play('flip', 11, true);
+        
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
         this.dealerHand = new Array();
@@ -20,6 +54,7 @@ Blackjack.GameState = {
         this.dealerCards = this.playerCards[1];
         this.playerCards = this.playerCards[0];
         this.gameOver = false;
+        this.standing = false;
         this.dealerBusted = false;
         this.playerBusted = false;
         this.dealerEleven = false;
@@ -30,6 +65,7 @@ Blackjack.GameState = {
         this.dealer2;
         this.dealer3;
         
+        this.input.enabled = false;
         this.deal(false, false, true);
         this.displayCards('dealer');
         this.checkPlay('dealer', 1);
@@ -38,6 +74,7 @@ Blackjack.GameState = {
         
         this.hitMe = this.add.button(50, 470, 'hitMe', function()
         {
+            this.input.enabled = false;
             //If dealer has played all cards don't play another
             if(this.dealerHand.length < 3)
             {
@@ -45,6 +82,7 @@ Blackjack.GameState = {
                 this.deal(false, true, true);
                 this.displayCards('dealer');
                 this.checkPlay('dealer', 1);
+                this.input.enabled = false;
             }
             else
             {
@@ -57,11 +95,12 @@ Blackjack.GameState = {
         this.call = this.add.button(50, 535, 'call', function()
         {
             //deal out and end
-            while(this.dealerHand.length < 3)
+            if(this.dealerHand.length < 3)
             {
+                this.standing = true;
                 this.deal(false, false, true);
-                this.displayCards('dealer');
                 this.checkPlay('dealer', 1);
+                this.displayCards('dealer');
             }
             //Check if higher than dealer
             if(!this.gameOver)
@@ -384,33 +423,143 @@ console.log(this.currentDealerValue);
             if(this.dealer1 != undefined)
             {
                 this.dealer1.destroy();
+            }
+            if(this.dealer2 != undefined)
+            {
                 this.dealer2.destroy();
+            }
+            if(this.dealer3 != undefined)
+            {
                 this.dealer3.destroy();
             }
             
-            if(this.dealerHand[0] != undefined)
+            if(this.dealerHand[0] != undefined && this.dealerHand[0].sprite === null)
             {
-                this.dealerHand[0].addSprite(200, 100);
+                var temp = this.add.sprite(300, 200, 'cardBack');
+                temp.anchor.setTo(0.5, 0.5);
+                
+                this.dealerHand[0].addSprite(300, 200);
+                this.dealerHand[0].sprite.scale.setTo(0, 1);
+                this.dealerHand[0].sprite.anchor.setTo(0.5, 0.5);
+                
+                this.world.bringToTop(this.dealer);
+                
+                var handTween = this.add.tween(this.dealer).to({x: 200}, 400, "Linear");
+                var backFlip = this.add.tween(temp.scale).to({x: 0}, 150, "Linear");
+                var frontFlip = this.add.tween(this.dealerHand[0].sprite.scale).to({x: 1}, 150, "Linear");
+                var retHand = this.add.tween(this.dealer).to({x: 50}, 400, "Linear");
+                retHand.onComplete.add(function()
+                {
+                    this.input.enabled = true;
+                    
+                    if(this.standing)
+                    {
+                        if(this.dealerHand.length < 3)
+                        {
+                             this.deal(false, false, true);
+                             this.checkPlay('dealer', 1);
+                             this.displayCards('dealer');
+                             this.inputEnabled = false;
+                        }
+                    }
+                }, this);
+                
+                handTween.chain(backFlip);
+                backFlip.chain(frontFlip);
+                frontFlip.chain(retHand);
+                
+                handTween.start();
             }
-            else
+            else if(this.dealerHand[0] === undefined)
             {
-                this.dealer1 = this.add.sprite(200, 100, 'cardBack');
+                this.dealer1 = this.add.sprite(300, 200, 'cardBack');
+                this.dealer1.anchor.setTo(0.5, 0.5);
             }
-            if(this.dealerHand[1] != undefined)
+            
+            if(this.dealerHand[1] != undefined && this.dealerHand[1].sprite === null)
             {
-                this.dealerHand[1].addSprite(400, 100);
+                temp = this.add.sprite(500, 200, 'cardBack');
+                temp.anchor.setTo(0.5, 0.5);
+                
+                this.dealerHand[1].addSprite(500, 200);
+                this.dealerHand[1].sprite.scale.setTo(0, 1);
+                this.dealerHand[1].sprite.anchor.setTo(0.5, 0.5);
+                
+                this.world.bringToTop(this.dealer);
+                
+                handTween = this.add.tween(this.dealer).to({x: 400}, 600, "Linear");
+                backFlip = this.add.tween(temp.scale).to({x: 0}, 200, "Linear");
+                frontFlip = this.add.tween(this.dealerHand[1].sprite.scale).to({x: 1}, 200, "Linear");
+                retHand = this.add.tween(this.dealer).to({x: 50}, 600, "Linear");
+                retHand.onComplete.add(function()
+                {
+                    this.input.enabled = true;
+                    
+                    if(this.standing)
+                    {
+                        if(this.dealerHand.length < 3)
+                        {
+                             this.deal(false, false, true);
+                             this.checkPlay('dealer', 1);
+                             this.displayCards('dealer');
+                             this.inputEnabled = false;
+                        }
+                    }
+                }, this);
+                
+                handTween.chain(backFlip);
+                backFlip.chain(frontFlip);
+                frontFlip.chain(retHand);
+                
+                handTween.start();
             }
-            else
+            else if(this.dealerHand[1] === undefined)
             {
-                this.dealer2 = this.add.sprite(400, 100, 'cardBack');
+                this.dealer2 = this.add.sprite(500, 200, 'cardBack');
+                this.dealer2.anchor.setTo(0.5, 0.5);
             }
-            if(this.dealerHand[2] != undefined)
+            
+            if(this.dealerHand[2] != undefined && this.dealerHand[2].sprite === null)
             {
-                this.dealerHand[2].addSprite(600, 100);
+                temp = this.add.sprite(700, 200, 'cardBack');
+                temp.anchor.setTo(0.5, 0.5);
+                
+                this.dealerHand[2].addSprite(700, 200);
+                this.dealerHand[2].sprite.scale.setTo(0, 1);
+                this.dealerHand[2].sprite.anchor.setTo(0.5, 0.5);
+                
+                this.world.bringToTop(this.dealer);
+                
+                handTween = this.add.tween(this.dealer).to({x: 600}, 800, "Linear");
+                backFlip = this.add.tween(temp.scale).to({x: 0}, 300, "Linear");
+                frontFlip = this.add.tween(this.dealerHand[2].sprite.scale).to({x: 1}, 300, "Linear");
+                retHand = this.add.tween(this.dealer).to({x: 50}, 800, "Linear");
+                retHand.onComplete.add(function()
+                {
+                    this.input.enabled = true;
+                    
+                    if(this.standing)
+                    {
+                        if(this.dealerHand.length < 3)
+                        {
+                             this.deal(false, false, true);
+                             this.checkPlay('dealer', 1);
+                             this.displayCards('dealer');
+                             this.inputEnabled = false;
+                        }
+                    }
+                }, this);
+                
+                handTween.chain(backFlip);
+                backFlip.chain(frontFlip);
+                frontFlip.chain(retHand);
+                
+                handTween.start();
             }
-            else
+            else if(this.dealerHand[2] === undefined)
             {
-                this.dealer3 = this.add.sprite(600, 100, 'cardBack');
+                this.dealer3 = this.add.sprite(700, 200, 'cardBack');
+                this.dealer3.anchor.setTo(0.5, 0.5);
             }
         }
         else if(party == 'player')
@@ -423,13 +572,44 @@ console.log(this.currentDealerValue);
                 }
                 else
                 {
-                    this.playerCards[i].addSprite(200 + (50 * i), 400);
+                    if(i == this.playerCards.length-1)
+                    {
+                        temp = this.add.sprite(120, 295, 'cardBack');
+                        temp.anchor.setTo(0.5, 0.5);
+                
+                        this.playerCards[i].addSprite(120, 295);
+                        this.playerCards[i].sprite.scale.setTo(0, 1);
+                        this.playerCards[i].sprite.anchor.setTo(0.5, 0.5);
+                        
+                        this.world.bringToTop(this.dealer);
+                        
+                        var travel = this.add.tween(this.playerCards[i].sprite).to({x: 200 + (50 * i), y: 400}, 1000, "Linear");
+                        var reAnchor = this.add.tween(this.playerCards[i].sprite.anchor).to({x: 0, y: 0}, 0, "Linear");
+                        backFlip = this.add.tween(temp.scale).to({x: 0}, 300, "Linear");
+                        frontFlip = this.add.tween(this.playerCards[i].sprite.scale).to({x: 1}, 300, "Linear");
+                        frontFlip.onComplete.add(function()
+                        {
+                            reAnchor.start();
+                            travel.start();
+                            
+                        }, this);
+                
+                        backFlip.chain(frontFlip);
+                        frontFlip.chain(retHand);
+                
+                        backFlip.start();
+                    }
+                    else
+                    {
+                        this.playerCards[i].addSprite(200 + (50 * i), 400);
+                    }
                 }
             }
         }
     },
     processEndGame: function()
     {
+        this.input.enabled=false;
         this.gameOver = true;
         
         if(this.playerBusted && this.dealerBusted)
@@ -474,6 +654,29 @@ console.log(this.currentDealerValue);
                 console.log("Player Wins By Default!");
             }
         }
+    },
+    chipFlip: function(chip)
+    {
+        var x = chip.x;
+        var y = chip.y;
+        
+        this.world.bringToTop(chip);
+            
+        var scale1 = this.add.tween(chip.scale).to({x: 1.5, y: 1.5}, 1000, "Linear");
+        var scale2 = this.add.tween(chip.scale).to({x: 0.5, y: 0.5}, 1000, "Linear");
+        var reset1 = this.add.tween(chip).to({alpha: 0}, 0, "Linear");
+        var reset2 = this.add.tween(chip).to({x: x, y: y}, 0, "Linear");
+        var reset3 = this.add.tween(chip.scale).to({x: 1, y: 1}, 0, "Linear");
+        var reset4 = this.add.tween(chip).to({alpha: 1}, 0, "Linear");
+            
+        scale1.chain(scale2);
+        scale2.chain(reset1);
+        reset1.chain(reset2);
+        reset2.chain(reset3);
+        reset3.chain(reset4);
+        scale1.start();
+            
+        this.add.tween(chip).to({x: 50, y: -50}, 2000, "Linear", true);
     },
     update: function ()
     {

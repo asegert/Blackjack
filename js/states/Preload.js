@@ -13,6 +13,8 @@ Blackjack.PreloadState = {
         this.load.image('call', 'assets/images/call.png');
         
         this.load.image('cardBack', 'assets/images/cardBack_red5.png');
+        this.load.image('deck', 'assets/images/cardDeck_red5.png');
+        this.load.image('dealer', 'assets/images/dealerHand.png');
         
         
         this.load.image('diamond2', 'assets/images/cardDiamonds2.png');
@@ -70,6 +72,15 @@ Blackjack.PreloadState = {
         this.load.image('spadeQ', 'assets/images/cardSpadesQ.png');
         this.load.image('spadeK', 'assets/images/cardSpadesK.png');
         this.load.image('spadeA', 'assets/images/cardSpadesA.png');
+        
+        this.load.spritesheet('blackChip', 'assets/images/blackChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('greenChip', 'assets/images/greenChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('blueChip', 'assets/images/blueChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('redChip', 'assets/images/redChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('whiteChip', 'assets/images/whiteChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('solidGreenChip', 'assets/images/solidGreenChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('solidBlueChip', 'assets/images/solidBlueChipSpritesheet.png', 70.4, 68, 5);
+        this.load.spritesheet('solidWhiteChip', 'assets/images/solidWhiteChipSpritesheet.png', 70.4, 68, 5);
     },
     create: function ()
     {
