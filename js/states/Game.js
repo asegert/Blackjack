@@ -15,6 +15,38 @@ Blackjack.GameState = {
                          ];
         this.cardArray = this.createCards(this.cardArray);
         
+        this.blackChip = this.add.button(650, 425, 'blackChip', this.chipFlip, this);
+        this.blackChip.animations.add('flip');
+        this.blackChip.play('flip', 10, true);
+        
+        this.whiteChip = this.add.button(725, 425, 'whiteChip', this.chipFlip, this);
+        this.whiteChip.animations.add('flip');
+        this.whiteChip.play('flip', 12, true);
+        
+        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
+        this.greenChip.animations.add('flip');
+        this.greenChip.play('flip', 11, true);
+        
+        this.blueChip = this.add.button(800, 425, 'blueChip', this.chipFlip, this);
+        this.blueChip.animations.add('flip');
+        this.blueChip.play('flip', 12, true);
+        
+        this.redChip = this.add.button(650, 500, 'redChip', this.chipFlip, this);
+        this.redChip.animations.add('flip');
+        this.redChip.play('flip', 10, true);
+        
+        this.solidWhiteChip = this.add.button(725, 500, 'solidWhiteChip', this.chipFlip, this);
+        this.solidWhiteChip.animations.add('flip');
+        this.solidWhiteChip.play('flip', 11, true);
+        
+        this.solidBlueChip = this.add.button(800, 500, 'solidBlueChip', this.chipFlip, this);
+        this.solidBlueChip.animations.add('flip');
+        this.solidBlueChip.play('flip', 10, true);
+        
+        this.solidGreenChip = this.add.button(875, 500, 'solidGreenChip', this.chipFlip, this);
+        this.solidGreenChip.animations.add('flip');
+        this.solidGreenChip.play('flip', 11, true);
+        
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
         this.dealerHand = new Array();
@@ -540,13 +572,44 @@ console.log(this.currentDealerValue);
                 }
                 else
                 {
-                    this.playerCards[i].addSprite(200 + (50 * i), 400);
+                    if(i == this.playerCards.length-1)
+                    {
+                        temp = this.add.sprite(120, 295, 'cardBack');
+                        temp.anchor.setTo(0.5, 0.5);
+                
+                        this.playerCards[i].addSprite(120, 295);
+                        this.playerCards[i].sprite.scale.setTo(0, 1);
+                        this.playerCards[i].sprite.anchor.setTo(0.5, 0.5);
+                        
+                        this.world.bringToTop(this.dealer);
+                        
+                        var travel = this.add.tween(this.playerCards[i].sprite).to({x: 200 + (50 * i), y: 400}, 1000, "Linear");
+                        var reAnchor = this.add.tween(this.playerCards[i].sprite.anchor).to({x: 0, y: 0}, 0, "Linear");
+                        backFlip = this.add.tween(temp.scale).to({x: 0}, 300, "Linear");
+                        frontFlip = this.add.tween(this.playerCards[i].sprite.scale).to({x: 1}, 300, "Linear");
+                        frontFlip.onComplete.add(function()
+                        {
+                            reAnchor.start();
+                            travel.start();
+                            
+                        }, this);
+                
+                        backFlip.chain(frontFlip);
+                        frontFlip.chain(retHand);
+                
+                        backFlip.start();
+                    }
+                    else
+                    {
+                        this.playerCards[i].addSprite(200 + (50 * i), 400);
+                    }
                 }
             }
         }
     },
     processEndGame: function()
     {
+        this.input.enabled=false;
         this.gameOver = true;
         
         if(this.playerBusted && this.dealerBusted)
@@ -591,6 +654,29 @@ console.log(this.currentDealerValue);
                 console.log("Player Wins By Default!");
             }
         }
+    },
+    chipFlip: function(chip)
+    {
+        var x = chip.x;
+        var y = chip.y;
+        
+        this.world.bringToTop(chip);
+            
+        var scale1 = this.add.tween(chip.scale).to({x: 1.5, y: 1.5}, 1000, "Linear");
+        var scale2 = this.add.tween(chip.scale).to({x: 0.5, y: 0.5}, 1000, "Linear");
+        var reset1 = this.add.tween(chip).to({alpha: 0}, 0, "Linear");
+        var reset2 = this.add.tween(chip).to({x: x, y: y}, 0, "Linear");
+        var reset3 = this.add.tween(chip.scale).to({x: 1, y: 1}, 0, "Linear");
+        var reset4 = this.add.tween(chip).to({alpha: 1}, 0, "Linear");
+            
+        scale1.chain(scale2);
+        scale2.chain(reset1);
+        reset1.chain(reset2);
+        reset2.chain(reset3);
+        reset3.chain(reset4);
+        scale1.start();
+            
+        this.add.tween(chip).to({x: 50, y: -50}, 2000, "Linear", true);
     },
     update: function ()
     {
