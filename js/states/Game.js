@@ -6,6 +6,8 @@ Blackjack.GameState = {
         this.background = this.add.sprite(0, 0, 'background');
         this.deck = this.add.sprite(50, 200, 'deck');
         this.dealer = this.add.sprite(50, 0, 'dealer');
+        this.round = 1;
+        this.loses = 0;
 
         this.cardArray = [
                             ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
@@ -17,36 +19,57 @@ Blackjack.GameState = {
         
         this.blackChip = this.add.button(650, 425, 'blackChip', this.chipFlip, this);
         this.blackChip.animations.add('flip');
+        this.blackChip.value = 1;
         this.blackChip.play('flip', 10, true);
+        this.add.text(670, 400, '$1', {fill: '#ffffff'});
         
         this.whiteChip = this.add.button(725, 425, 'whiteChip', this.chipFlip, this);
         this.whiteChip.animations.add('flip');
+        this.whiteChip.value = 5;
         this.whiteChip.play('flip', 12, true);
-        
-        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
-        this.greenChip.animations.add('flip');
-        this.greenChip.play('flip', 11, true);
+        this.add.text(745, 400, '$5', {fill: '#ffffff'});
         
         this.blueChip = this.add.button(800, 425, 'blueChip', this.chipFlip, this);
         this.blueChip.animations.add('flip');
+        this.blueChip.value = 10;
         this.blueChip.play('flip', 12, true);
+        this.add.text(805, 400, '$10', {fill: '#ffffff'});
+        
+        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
+        this.greenChip.animations.add('flip');
+        this.greenChip.value = 50;
+        this.greenChip.play('flip', 11, true);
+        this.add.text(880, 400, '$50', {fill: '#ffffff'});
         
         this.redChip = this.add.button(650, 500, 'redChip', this.chipFlip, this);
         this.redChip.animations.add('flip');
+        this.redChip.value = 100;
         this.redChip.play('flip', 10, true);
+        this.add.text(655, 560, '$100', {fill: '#ffffff'});
         
         this.solidWhiteChip = this.add.button(725, 500, 'solidWhiteChip', this.chipFlip, this);
         this.solidWhiteChip.animations.add('flip');
+        this.solidWhiteChip.value = 500;
         this.solidWhiteChip.play('flip', 11, true);
+        this.add.text(730, 560, '$500', {fill: '#ffffff'});
         
         this.solidBlueChip = this.add.button(800, 500, 'solidBlueChip', this.chipFlip, this);
         this.solidBlueChip.animations.add('flip');
+        this.solidBlueChip.value = 1000;
         this.solidBlueChip.play('flip', 10, true);
+        this.add.text(800, 560, '$1000', {fill: '#ffffff'});
         
         this.solidGreenChip = this.add.button(875, 500, 'solidGreenChip', this.chipFlip, this);
         this.solidGreenChip.animations.add('flip');
+        this.solidGreenChip.value = 5000;
         this.solidGreenChip.play('flip', 11, true);
+        this.add.text(875, 560, '$5000', {fill: '#ffffff'});
         
+        this.bet = this.add.text(200, 350, "Current Bet: $0", {fill: '#ffffff'});
+        this.betted = false;
+        this.betNum = 0;
+        
+        this.cardsOrig = this.cardArray;
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
         this.dealerHand = new Array();
@@ -75,6 +98,8 @@ Blackjack.GameState = {
         this.hitMe = this.add.button(50, 470, 'hitMe', function()
         {
             this.input.enabled = false;
+            if(!this.betted)
+                this.betted = true;
             //If dealer has played all cards don't play another
             if(this.dealerHand.length < 3)
             {
@@ -94,23 +119,29 @@ Blackjack.GameState = {
         
         this.call = this.add.button(50, 535, 'call', function()
         {
+            this.input.enabled = false;
+            this.standing = true;
+            if(!this.betted)
+                this.betted = true;
             //deal out and end
             if(this.dealerHand.length < 3)
             {
-                this.standing = true;
                 this.deal(false, false, true);
                 this.checkPlay('dealer', 1);
                 this.displayCards('dealer');
             }
         }, this);
+        
+        this.twentyOneAnimation('Place your Bets!', true, undefined, 10000, true, 1.5);
     },
     preShuffle: function()
     {
-        var initShuffle = new Array(this.cardArray.length);
+        var initShuffle = new Array(this.cardsOrig.length);
         
-        for(var i = 0, initLen = this.cardArray.length; i<initLen; i++)
+        for(var i = 0, initLen = this.cardsOrig.length; i<initLen; i++)
         {
-            initShuffle[i] = this.shuffle(this.cardArray[i], null);
+            initShuffle[i] = this.shuffle(this.cardsOrig[i], null);
+            //console.log(i);
         }
         
         //If the array has an odd number add the two last ones together to ensure iteration in two's in the while loop
@@ -291,7 +322,6 @@ Blackjack.GameState = {
 console.log(this.currentDealerValue);
             if(this.currentDealerValue > 21)
             {
-                console.log('over');
                 this.dealerBusted = true;
                 console.log('Bust');
                 if(this.playerBusted != true)
@@ -384,7 +414,7 @@ console.log(this.currentDealerValue);
                     this.currentPlayerValue = tempValue;
                 }
             }
-            
+ console.log("player: "+this.currentPlayerValue);           
             if(this.currentPlayerValue > 21)
             {
                 this.playerBusted = true;
@@ -634,6 +664,10 @@ console.log(this.currentDealerValue);
                 {
                     break;
                 }
+                else if(this.playerCards[i].sprite != null)
+                {
+                    
+                }
                 else
                 {
                     if(i == this.playerCards.length-1)
@@ -675,16 +709,20 @@ console.log(this.currentDealerValue);
     {
         this.input.enabled=false;
         this.gameOver = true;
+        this.betNum = 0;
+        this.bet.setText("Current Bet: $0");
         
         if(this.playerBusted && this.dealerBusted)
         {
             this.twentyOneAnimation('Both Bust! \nTie!', true, true, 5000, true, 2);
             console.log('Both Bust! \nTie!');
+            this.loses++;
         }
         else if(this.playerBusted)
         {
             this.twentyOneAnimation('Player Busted. \nDealer Wins!', true, true, 5000, true, 2);
             console.log('Player Busted. \nDealer Wins!');
+            this.loses++;
         }
         else if(this.dealerBusted)
         {
@@ -708,6 +746,7 @@ console.log(this.currentDealerValue);
             {
                 this.twentyOneAnimation("Dealer Wins!", true, true, 5000, true, 2);
                 console.log("Dealer Wins!");
+                this.loses++;
             }
             else if( this.currentDealerValue < this.currentPlayerValue)
             {
@@ -718,6 +757,7 @@ console.log(this.currentDealerValue);
             {
                 this.twentyOneAnimation("Tie!", true, true, 5000, true, 2);
                 console.log("Tie!");
+                this.loses++;
             }
             else
             {
@@ -725,9 +765,14 @@ console.log(this.currentDealerValue);
                 console.log("Player Wins By Default!");
             }
         }
+        this.round++;
     },
     twentyOneAnimation: function(tex, destroy, final, time, string, scale)
     {
+        if(this.twentyOne != undefined)
+        {
+            this.twentyOne.destroy();
+        }
         var emitters = this.add.group();
         
         if(final)
@@ -744,6 +789,10 @@ console.log(this.currentDealerValue);
             emitters.add(emit4);
             emitters.add(emit5);
         }
+        else if (final === undefined)
+        {
+            
+        }
         else
         {
             console.log(emitters);
@@ -758,22 +807,126 @@ console.log(this.currentDealerValue);
         }
         if(string)
         {
-            var twentyOne = this.add.text(this.world.centerX, this.world.centerY, tex);
+            this.twentyOne = this.add.text(this.world.centerX, this.world.centerY, tex);
         }
         else
         {
-            var twentyOne = this.add.sprite(this.world.centerX, this.world.centerY, tex);
+            this.twentyOne = this.add.sprite(this.world.centerX, this.world.centerY, tex);
         }
         
-        twentyOne.anchor.setTo(0.5, 0.5);
-        twentyOne.scale.setTo(0, 0);
-        var tween = this.add.tween(twentyOne.scale).to({x: scale, y: scale}, time, "Linear", true);
-        this.world.bringToTop(twentyOne);
+        this.twentyOne.anchor.setTo(0.5, 0.5);
+        this.twentyOne.scale.setTo(0, 0);
+        var tween = this.add.tween(this.twentyOne.scale).to({x: scale, y: scale}, time, "Linear", true);
+        this.world.bringToTop(this.twentyOne);
         tween.onComplete.add(function()
         {
             if(destroy)
-                twentyOne.destroy();
+                this.twentyOne.destroy();
             emitters.removeAll();
+            
+            if(final)
+            {
+                if(this.round > 3)
+                {
+                    document.getElementById('form1').submit;
+                }
+                else
+                {
+                    this.betted = false;
+                    this.blackChip.play('flip', 10, true);
+                    this.whiteChip.play('flip', 11, true);
+                    this.blueChip.play('flip', 11, true);
+                    this.greenChip.play('flip', 12, true);
+                    this.redChip.play('flip', 10, true);
+                    this.solidWhiteChip.play('flip', 10, true);
+                    this.solidBlueChip.play('flip', 12, true);
+                    this.solidGreenChip.play('flip', 11, true);
+            
+                    if(this.loses == 1)
+                    {
+                        this.blackChip.inputEnabled = true;
+                        this.whiteChip.inputEnabled = true;
+                        this.blueChip.inputEnabled = true;
+                        this.greenChip.inputEnabled = true;
+                        this.redChip.inputEnabled = false;
+                        this.solidWhiteChip.inputEnabled = false;
+                        this.solidBlueChip.inputEnabled = false;
+                        this.solidGreenChip.inputEnabled = false;
+                
+                        this.redChip.alpha = 0.5;
+                        this.solidWhiteChip.alpha = 0.5;
+                        this.solidBlueChip.alpha = 0.5;
+                        this.solidGreenChip.alpha = 0.5;
+                    }
+                    else if(this.loses > 1)
+                    {
+                        this.blackChip.inputEnabled = true;
+                        this.whiteChip.inputEnabled = false;
+                        this.blueChip.inputEnabled = false;
+                        this.greenChip.inputEnabled = false;
+                        this.redChip.inputEnabled = false;
+                        this.solidWhiteChip.inputEnabled = false;
+                        this.solidBlueChip.inputEnabled = false;
+                        this.solidGreenChip.inputEnabled = false;
+                
+                        this.whiteChip.alpha = 0.5;
+                        this.blueChip.alpha = 0.5;
+                        this.greenChip.alpha = 0.5;
+                        this.redChip.alpha = 0.5;
+                        this.solidWhiteChip.alpha = 0.5;
+                        this.solidBlueChip.alpha = 0.5;
+                        this.solidGreenChip.alpha = 0.5;
+                    }
+                    else
+                    {
+                        this.blackChip.inputEnabled = true;
+                        this.whiteChip.inputEnabled = true;
+                        this.blueChip.inputEnabled = true;
+                        this.greenChip.inputEnabled = true;
+                        this.redChip.inputEnabled = true;
+                        this.solidWhiteChip.inputEnabled = true;
+                        this.solidBlueChip.inputEnabled = true;
+                        this.solidGreenChip.inputEnabled = true;
+                    }
+        
+                    for(var i=0, len = this.dealerHand.length; i<len; i++)
+                    {
+                        this.dealerHand[i].sprite.destroy();
+                    }
+                    
+                    for(var i=0, len = this.playerCards.length; i<len; i++)
+                    {
+                        this.playerCards[i].sprite.destroy();
+                    }
+                    
+                    this.cardArray = this.preShuffle();
+                    this.cardArray = this.cardArray[0];
+                    this.dealerHand = new Array();
+                    this.playerCards = this.deal(true, false, false);
+                    this.dealerCards = this.playerCards[1];
+                    this.playerCards = this.playerCards[0];
+                    this.gameOver = false;
+                    this.standing = false;
+                    this.dealerBusted = false;
+                    this.playerBusted = false;
+                    this.dealerEleven = false;
+                    this.playerEleven = false;
+                    this.currentDealerValue = 0;
+                    this.currentPlayerValue = 0;
+                    this.dealer1;
+                    this.dealer2;
+                    this.dealer3;
+                    
+                    this.input.enabled = false;
+                    this.deal(false, false, true);
+                    this.displayCards('dealer');
+                    this.checkPlay('dealer', 1);
+                    this.displayCards('player');
+                    this.checkPlay('player', 2);
+        
+                    this.twentyOneAnimation('Place your Bets!', true, undefined, 10000, true, 1.5);
+                }
+            }
         }, this);
     },
     createEmitter: function(x, y, tex, sprite, scale)
@@ -795,6 +948,8 @@ console.log(this.currentDealerValue);
     {
         var x = chip.x;
         var y = chip.y;
+        this.betNum += chip.value;
+        this.bet.setText("Current Bet: $"+this.betNum);
         
         this.world.bringToTop(chip);
             
@@ -816,7 +971,32 @@ console.log(this.currentDealerValue);
     },
     update: function ()
     {
-        
+        if(this.betted)
+        {
+            this.blackChip.animations.stop();
+            this.blackChip.loadTexture('blackChip', 1);
+            
+            this.whiteChip.animations.stop();
+            this.whiteChip.loadTexture('whiteChip', 1);
+            
+            this.blueChip.animations.stop();
+            this.blueChip.loadTexture('blueChip', 1);
+            
+            this.greenChip.animations.stop();
+            this.greenChip.loadTexture('greenChip', 1);
+            
+            this.redChip.animations.stop();
+            this.redChip.loadTexture('redChip', 1);
+            
+            this.solidWhiteChip.animations.stop();
+            this.solidWhiteChip.loadTexture('solidWhiteChip', 1);
+            
+            this.solidBlueChip.animations.stop();
+            this.solidBlueChip.loadTexture('solidBlueChip', 1);
+            
+            this.solidGreenChip.animations.stop();
+            this.solidGreenChip.loadTexture('solidGreenChip', 1);
+        }
     }
 };
 /*Copyright (C) Wayside Co. - All Rights Reserved
