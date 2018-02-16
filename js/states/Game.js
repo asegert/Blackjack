@@ -6,8 +6,8 @@ Blackjack.GameState = {
         this.background = this.add.sprite(0, 0, 'background');
         this.deck = this.add.sprite(50, 200, 'deck');
         this.dealer = this.add.sprite(50, 0, 'dealer');
-        this.round = 1;
-        this.loses = 0;
+        Blackjack.round = Blackjack.round || 1;
+        Blackjack.loses = Blackjack.loses || 0;
 
         this.cardArray = [
                             ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
@@ -64,6 +64,67 @@ Blackjack.GameState = {
         this.solidGreenChip.value = 5000;
         this.solidGreenChip.play('flip', 11, true);
         this.add.text(875, 560, '$5000', {fill: '#ffffff'});
+        
+        if(Blackjack.loses === 1)
+        {
+            this.blackChip.alpha = 1;   
+            this.whiteChip.alpha = 1;  
+            this.blueChip.alpha = 1;  
+            this.greenChip.alpha = 1; 
+            this.redChip.alpha = 0.5;  
+            this.solidWhiteChip.alpha = 0.5;
+            this.solidBlueChip.alpha = 0.5;
+            this.solidGreenChip.alpha = 0.5;
+            
+            this.blackChip.inputEnabled = true;   
+            this.whiteChip.inputEnabled = true;  
+            this.blueChip.inputEnabled = true;   
+            this.greenChip.inputEnabled = true;  
+            this.redChip.inputEnabled = false;   
+            this.solidWhiteChip.inputEnabled = false;  
+            this.solidBlueChip.inputEnabled = false;  
+            this.solidGreenChip.inputEnabled = false; 
+        }
+        else if(Blackjack.loses > 1)
+        {
+            this.blackChip.alpha = 1;   
+            this.whiteChip.alpha = 0.5;  
+            this.blueChip.alpha = 0.5;  
+            this.greenChip.alpha = 0.5; 
+            this.redChip.alpha = 0.5;  
+            this.solidWhiteChip.alpha = 0.5;
+            this.solidBlueChip.alpha = 0.5;
+            this.solidGreenChip.alpha = 0.5;
+            
+            this.blackChip.inputEnabled = true;   
+            this.whiteChip.inputEnabled = false;  
+            this.blueChip.inputEnabled = false;   
+            this.greenChip.inputEnabled = false;  
+            this.redChip.inputEnabled = false;   
+            this.solidWhiteChip.inputEnabled = false;  
+            this.solidBlueChip.inputEnabled = false;  
+            this.solidGreenChip.inputEnabled = false;  
+        }
+        else
+        {
+            this.blackChip.alpha = 1;   
+            this.whiteChip.alpha = 1;  
+            this.blueChip.alpha = 1;  
+            this.greenChip.alpha = 1; 
+            this.redChip.alpha = 1;  
+            this.solidWhiteChip.alpha = 1;
+            this.solidBlueChip.alpha = 1;
+            this.solidGreenChip.alpha = 1;
+            
+            this.blackChip.inputEnabled = true;   
+            this.whiteChip.inputEnabled = true;  
+            this.blueChip.inputEnabled = true;   
+            this.greenChip.inputEnabled = true;  
+            this.redChip.inputEnabled = true;   
+            this.solidWhiteChip.inputEnabled = true;  
+            this.solidBlueChip.inputEnabled = true;  
+            this.solidGreenChip.inputEnabled = true; 
+        }
         
         this.bet = this.add.text(200, 350, "Current Bet: $0", {fill: '#ffffff'});
         this.betted = false;
@@ -442,7 +503,7 @@ console.log(this.currentDealerValue);
             }
             else if(this.currentPlayerValue === 21)
             {
-                this.twentyOneAnimation('21', true, false, 5000, false, 1);
+                this.twentyOneAnimation('21', true, false, 2000, false, 1);
                 
                 return null;
             }
@@ -711,13 +772,13 @@ console.log(this.currentDealerValue);
         {
             this.twentyOneAnimation('Both Bust! \nTie!', true, true, 5000, true, 2);
             console.log('Both Bust! \nTie!');
-            this.loses++;
+            Blackjack.loses++;
         }
         else if(this.playerBusted)
         {
             this.twentyOneAnimation('Player Busted. \nDealer Wins!', true, true, 5000, true, 2);
             console.log('Player Busted. \nDealer Wins!');
-            this.loses++;
+            Blackjack.loses++;
         }
         else if(this.dealerBusted)
         {
@@ -761,7 +822,7 @@ console.log(this.currentDealerValue);
                 console.log("Player Wins By Default!");
             }
         }
-        this.round++;
+        Blackjack.round++;
     },
     twentyOneAnimation: function(tex, destroy, final, time, string, scale)
     {
@@ -820,109 +881,18 @@ console.log(this.currentDealerValue);
                 this.twentyOne.destroy();
             emitters.removeAll();
             
-            /*if(final)
+            if(final)
             {
-                if(this.round > 3)
+                console.log('round: '+Blackjack.round);
+                if(Blackjack.round > 3)
                 {
                     document.getElementById('form1').submit;
                 }
                 else
                 {
-                    this.betted = false;
-                    this.blackChip.play('flip', 10, true);
-                    this.whiteChip.play('flip', 11, true);
-                    this.blueChip.play('flip', 11, true);
-                    this.greenChip.play('flip', 12, true);
-                    this.redChip.play('flip', 10, true);
-                    this.solidWhiteChip.play('flip', 10, true);
-                    this.solidBlueChip.play('flip', 12, true);
-                    this.solidGreenChip.play('flip', 11, true);
-            
-                    if(this.loses == 1)
-                    {
-                        this.blackChip.inputEnabled = true;
-                        this.whiteChip.inputEnabled = true;
-                        this.blueChip.inputEnabled = true;
-                        this.greenChip.inputEnabled = true;
-                        this.redChip.inputEnabled = false;
-                        this.solidWhiteChip.inputEnabled = false;
-                        this.solidBlueChip.inputEnabled = false;
-                        this.solidGreenChip.inputEnabled = false;
-                
-                        this.redChip.alpha = 0.5;
-                        this.solidWhiteChip.alpha = 0.5;
-                        this.solidBlueChip.alpha = 0.5;
-                        this.solidGreenChip.alpha = 0.5;
-                    }
-                    else if(this.loses > 1)
-                    {
-                        this.blackChip.inputEnabled = true;
-                        this.whiteChip.inputEnabled = false;
-                        this.blueChip.inputEnabled = false;
-                        this.greenChip.inputEnabled = false;
-                        this.redChip.inputEnabled = false;
-                        this.solidWhiteChip.inputEnabled = false;
-                        this.solidBlueChip.inputEnabled = false;
-                        this.solidGreenChip.inputEnabled = false;
-                
-                        this.whiteChip.alpha = 0.5;
-                        this.blueChip.alpha = 0.5;
-                        this.greenChip.alpha = 0.5;
-                        this.redChip.alpha = 0.5;
-                        this.solidWhiteChip.alpha = 0.5;
-                        this.solidBlueChip.alpha = 0.5;
-                        this.solidGreenChip.alpha = 0.5;
-                    }
-                    else
-                    {
-                        this.blackChip.inputEnabled = true;
-                        this.whiteChip.inputEnabled = true;
-                        this.blueChip.inputEnabled = true;
-                        this.greenChip.inputEnabled = true;
-                        this.redChip.inputEnabled = true;
-                        this.solidWhiteChip.inputEnabled = true;
-                        this.solidBlueChip.inputEnabled = true;
-                        this.solidGreenChip.inputEnabled = true;
-                    }
-        
-                    for(var i=0, len = this.dealerHand.length; i<len; i++)
-                    {
-                        this.dealerHand[i].sprite.destroy();
-                    }
-                    
-                    for(var i=0, len = this.playerCards.length; i<len; i++)
-                    {
-                        this.playerCards[i].sprite.destroy();
-                    }
-                    
-                    this.cardArray = this.preShuffle();
-                    this.cardArray = this.cardArray[0];
-                    this.dealerHand = new Array();
-                    this.playerCards = this.deal(true, false, false);
-                    this.dealerCards = this.playerCards[1];
-                    this.playerCards = this.playerCards[0];
-                    this.gameOver = false;
-                    this.standing = false;
-                    this.dealerBusted = false;
-                    this.playerBusted = false;
-                    this.dealerEleven = false;
-                    this.playerEleven = false;
-                    this.currentDealerValue = 0;
-                    this.currentPlayerValue = 0;
-                    this.dealer1;
-                    this.dealer2;
-                    this.dealer3;
-                    
-                    this.input.enabled = false;
-                    this.deal(false, false, true);
-                    this.displayCards('dealer');
-                    this.checkPlay('dealer', 1);
-                    this.displayCards('player');
-                    this.checkPlay('player', 2);
-        
-                    this.twentyOneAnimation('Place your Bets!', true, undefined, 10000, true, 1.5);
+                    this.state.start('Game');
                 }
-            }*/
+            }
         }, this);
     },
     createEmitter: function(x, y, tex, sprite, scale)
@@ -933,6 +903,7 @@ console.log(this.currentDealerValue);
             emitter.makeParticles(tex, [0, 1, 2, 3, 4]);
         else
             emitter.makeParticles(tex);
+        
         emitter.minParticleScale = scale;
         emitter.maxParticleScale = scale;
         
