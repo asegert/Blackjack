@@ -3,7 +3,12 @@ var Blackjack = Blackjack || {};
 Blackjack.StoryState = {
     create: function ()
     {
-        this.game.state.start('Game');
+        this.add.sprite(0, 0, 'story');
+        var start = this.add.button(485, 440, 'start', function()
+        {
+            this.game.state.start('Game');
+        }, this);
+        start.scale.setTo(0.7, 0.7);
     }
 };
 /*Copyright (C) Wayside Co. - All Rights Reserved

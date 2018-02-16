@@ -8,6 +8,8 @@ Blackjack.PreloadState = {
         this.load.setPreloadSprite(preloadProgress);
 
         this.load.image('background', 'assets/images/background.png');
+        this.load.image('story', 'assets/images/instructions.png');
+        this.load.image('start', 'assets/images/start_button.png');
         //Buttons
         this.load.image('hitMe', 'assets/images/hitMe.png');
         this.load.image('call', 'assets/images/call.png');
