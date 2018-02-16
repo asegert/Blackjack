@@ -70,30 +70,6 @@ Blackjack.GameState = {
         this.betNum = 0;
         
         this.cardsOrig = this.cardArray;
-        this.cardArray = this.preShuffle();
-        this.cardArray = this.cardArray[0];
-        this.dealerHand = new Array();
-        this.playerCards = this.deal(true, false, false);
-        this.dealerCards = this.playerCards[1];
-        this.playerCards = this.playerCards[0];
-        this.gameOver = false;
-        this.standing = false;
-        this.dealerBusted = false;
-        this.playerBusted = false;
-        this.dealerEleven = false;
-        this.playerEleven = false;
-        this.currentDealerValue = 0;
-        this.currentPlayerValue = 0;
-        this.dealer1;
-        this.dealer2;
-        this.dealer3;
-        
-        this.input.enabled = false;
-        this.deal(false, false, true);
-        this.displayCards('dealer');
-        this.checkPlay('dealer', 1);
-        this.displayCards('player');
-        this.checkPlay('player', 2);
         
         this.hitMe = this.add.button(50, 470, 'hitMe', function()
         {
@@ -104,17 +80,14 @@ Blackjack.GameState = {
             if(this.dealerHand.length < 3)
             {
                 //player always gets a card
-                this.deal(false, true, true);
-                this.displayCards('dealer');
-                this.checkPlay('dealer', 1);
+                this.deal(false, true, true, 1, 1);
                 this.input.enabled = false;
             }
             else
             {
-                this.deal(false, true, false);
+                this.deal(false, true, false, 1, 0);
             }
             this.displayCards('player');
-            this.checkPlay('player', 1);
         }, this);
         
         this.call = this.add.button(50, 535, 'call', function()
@@ -126,13 +99,35 @@ Blackjack.GameState = {
             //deal out and end
             if(this.dealerHand.length < 3)
             {
-                this.deal(false, false, true);
-                this.checkPlay('dealer', 1);
-                this.displayCards('dealer');
+                this.deal(false, false, true, 0, 1);
             }
         }, this);
+        this.initGame();
+    },
+    initGame: function()
+    {
+        this.cardArray = this.preShuffle();
+        this.cardArray = this.cardArray[0];
+        this.dealerHand = new Array();
+        this.playerCards = this.deal(true, false, false, 0, 0);
+        this.dealerCards = this.playerCards[1];
+        this.playerCards = this.playerCards[0];
+        this.gameOver = false;
+        this.standing = false;
+        this.dealerBusted = false;
+        this.playerBusted = false;
+        this.dealerEleven = false;
+        this.playerEleven = false;
+        this.currentDealerValue = 0;
+        this.currentPlayerValue = 0;
+        this.dealer1=undefined;
+        this.dealer2=undefined;
+        this.dealer3=undefined;
+        this.nextMove = null;
         
-        this.twentyOneAnimation('Place your Bets!', true, undefined, 10000, true, 1.5);
+        this.input.enabled = false;
+        this.deal(false, true, true, 2, 1);
+        console.log(this.playerCards);
     },
     preShuffle: function()
     {
@@ -141,7 +136,6 @@ Blackjack.GameState = {
         for(var i = 0, initLen = this.cardsOrig.length; i<initLen; i++)
         {
             initShuffle[i] = this.shuffle(this.cardsOrig[i], null);
-            //console.log(i);
         }
         
         //If the array has an odd number add the two last ones together to ensure iteration in two's in the while loop
@@ -241,29 +235,29 @@ Blackjack.GameState = {
         }
         return retArr;
     },
-    deal: function(initDeal, playerDeal, dealerDeal)
+    deal: function(initDeal, playerDeal, dealerDeal, playerNum, dealerNum)
     {
         if(initDeal)
         {
-            var player = new Array(2);
-            var dealer = new Array(this.cardArray.length - 2);
-            
+            var player = new Array(1);
+            var dealer = new Array(this.cardArray.length - 1);
+
             for(var i=0, len = this.cardArray.length; i<len; i++)
             {
-                if(i<2)
+                if(i<1)
                 {
                     player[i]=this.cardArray[i];
                 }
                 else
                 {
-                    dealer[i-2] = this.cardArray[i];
+                    dealer[i-1] = this.cardArray[i];
                 }
             }
-            
+
             var retArr = new Array(2);
             retArr[0] = player;
             retArr[1] = dealer;
-            
+
             return retArr;
         }
         else
@@ -271,28 +265,35 @@ Blackjack.GameState = {
             if(playerDeal)
             {
                 this.playerCards[this.playerCards.length] = this.dealerCards.pop();
+                this.displayCards('player', playerNum);
             }
             
             if(dealerDeal)
             {
                 this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+                this.displayCards('dealer', dealerNum);
+                console.log(this.dealerHand);
             }
             //Call for animation flip to show card and add card to dealer total-> make appropriate move
             return null;
         }
     },
-    checkPlay: function(party, added)//fix run time with compound value
+    checkPlay: function(party, added, msg)
     {
         if(this.gameOver)
         {
-            
+            return null;
         }
+        //If dealer ifo is being checked
         else if(party == 'dealer')
         {
+            //If a card has been added increase the dealer value and check for 11
             if(added > 0)
             {
                 for(var i = 1; i<=added; i++)
                 {
+                    console.log(i);
+                    console.log(this.dealerHand);
                     this.currentDealerValue +=this.dealerHand[this.dealerHand.length-i].value;
                     
                     if(this.dealerHand[this.dealerHand.length-i].value == 1)
@@ -301,6 +302,7 @@ Blackjack.GameState = {
                     }
                 }
             }
+            //If it is unknown if a card was added or not
             else if(added === -1)
             {
                 var tempValue = 0;
@@ -320,75 +322,79 @@ Blackjack.GameState = {
             }
             
 console.log(this.currentDealerValue);
-            if(this.currentDealerValue > 21)
+            //If the dealer has busted, check if player also busted
+            if(this.currentDealerValue > 21 && !this.dealerBusted)
             {
-                this.dealerBusted = true;
                 console.log('Bust');
-                if(this.playerBusted != true)
+                this.dealerBusted = true;
+                if(this.playerBusted)
                 {
-                    this.checkPlay('player', -1);
+                    return 'endGame';
                 }
-                else
+                return this.checkPlay('player', -1);
+                
+                //If more cards need to be displayed
+                if(this.dealerHand.length < 3)
                 {
-                    console.log('a');
-                    this.processEndGame();
+                    return 'deal';
+
                 }
+                return 'endGame';
             }
+            //If dealer hasn't busted but player has game is over
+            else if(this.playerBusted)
+            {
+                return 'endGame';
+            }
+            //If no more cards need to be dealt
             else if(this.dealerHand.length > 2 && this.currentDealerValue >= 16)
             {
-                console.log('b');
-                this.processEndGame();
+                return 'endGame';
             }
+            //If the bonus card can be used
             else if(this.dealerHand.length > 2 && this.currentDealerValue < 16)
             {
                 //If an ace is one of the cards check if adding 10 as ace is 1 or 11 will get it in the right margin, otherwise continue adding the additional card
                 if(this.dealerEleven)
                 {
-                    //If using the ace as an eleven will bust the dealer or still keep the dealer below 16
-                    if(this.currentDealerValue + 10 > 22 || this.currentDealerValue + 10 < 16)
+                    //If using the ace as an eleven will be good to end the game
+                    if(this.currentDealerValue + 10 < 22 || this.currentDealerValue + 10 > 16)
                     {
-                        this.deal(false, false, true);
-                        this.checkPlay('dealer', 1);
-                        this.displayCards('dealer');
-                        
-                        if(this.dealerHand.length > 2 && this.currentDealerValue + 10 >= 16)
-                        {
-                            console.log('i');
-                            this.processEndGame();
-                        }
+                        return 'endGame';
                     }
+                    //If the 11 cannot be used, but more cards can be dealt do so
+                    else if(this.dealerHand.length < 3)
+                    {
+                        return 'deal';
+                    }
+                    this.dealerBusted = true;
+                    return 'endGame';
                 }
-                else if(this.playerBusted)
+                //If there is no 11 and one more can be displayed
+                else if(this.dealerHand.length < 3)
                 {
-                    console.log('c');
-                    this.processEndGame();
+                    return 'deal';
                 }
                 else
                 {
-                    this.deal(false, false, true);
-                    this.checkPlay('dealer', 1);
-                    this.displayCards('dealer');
+                    return 'endGame';
                 }
             }
-            else if(this.playerBusted)
+            else if(this.dealerHand.length < 3)
             {
-                console.log('d');
-                this.processEndGame();
+                return 'deal';
             }
- /*           else if(this.standing && this.dealerHand.length < 3)
-            {
-                this.deal(false, false, true);
-                this.checkPlay('dealer', 1);
-                this.displayCards('dealer');
-            }*/
+            return null;
         }
         else if(party == 'player')
         {
-            //If the player has not 'hit me', player will only have two cards so both must be checked
+            //If the player has a new card
             if(added > 0)
             {
                 for(var i = 1; i<=added; i++)
                 {
+                    console.log(added);
+                    console.log(this.playerCards);
                     this.currentPlayerValue += this.playerCards[this.playerCards.length-i].value;   
             
                     if(this.playerCards[this.playerCards.length-i].value == 1)
@@ -397,6 +403,7 @@ console.log(this.currentDealerValue);
                     }
                 }
             }
+            //If a card may or may not have been added
             else if(added === -1)
             {
                 var tempValue = 0;
@@ -408,64 +415,44 @@ console.log(this.currentDealerValue);
                     {
                         this.playerEleven = true;
                     }
+                    console.log(tempValue);
                 }
                 if(tempValue > this.currentPlayerValue)
                 {
                     this.currentPlayerValue = tempValue;
                 }
             }
- console.log("player: "+this.currentPlayerValue);           
-            if(this.currentPlayerValue > 21)
+            
+ console.log("player: "+this.currentPlayerValue);  
+ 
+            if(this.currentPlayerValue > 21 && !this.playerBusted)
             {
                 this.playerBusted = true;
                 console.log('Bust');
-                if(this.dealerBusted != true)
+                if(this.dealerBusted)
                 {
-                    this.checkPlay('dealer', -1);
+                    return 'endGame';
                 }
-                else
-                {
-                    console.log('e');
-                    this.processEndGame();
-                }
+                
+                return this.checkPlay('dealer', -1);
+            }
+            else if(this.dealerBusted)
+            {
+                return 'endGame';
             }
             else if(this.currentPlayerValue === 21)
             {
                 this.twentyOneAnimation('21', true, false, 5000, false, 1);
-                while(this.dealerHand.length < 3)
-                {
-                    this.deal(false, false, true);
-                    this.displayCards('dealer');
-                    this.checkPlay('dealer', 1);
-                }
-                //Check if higher than dealer
-                if(!this.gameOver)
-                {
-                    console.log('f');
-                    this.processEndGame();
-                }
+                
+                return null;
             }
             else if(this.currentPlayerValue === 11 && this.playerEleven)
             {
                 this.twentyOneAnimation('21', true, false, 5000, false, 1);
-                while(this.dealerHand.length < 3)
-                {
-                    this.deal(false, false, true);
-                    this.displayCards('dealer');
-                    this.checkPlay('dealer', 1);
-                }
-                //Check if higher than dealer
-                if(!this.gameOver)
-                {
-                    console.log('g');
-                    this.processEndGame();
-                }
+                
+                return null;
             }
-            else if(this.dealerBusted)
-            {
-                console.log('h');
-                this.processEndGame();
-            }
+            return null;
         }
     },
     createCards: function(cardArr)
@@ -481,10 +468,12 @@ console.log(this.currentDealerValue);
         }
         return cardArr;
     },
-    displayCards: function(party)
+    displayCards: function(party, num)
     {
         if(party == 'dealer')
         {
+            console.log('ok');
+            console.log(this.dealerHand[1]);
             if(this.dealer1 != undefined)
             {
                 this.dealer1.destroy();
@@ -497,9 +486,9 @@ console.log(this.currentDealerValue);
             {
                 this.dealer3.destroy();
             }
-            
             if(this.dealerHand[0] != undefined && this.dealerHand[0].sprite === null)
             {
+                console.log('k');
                 var temp = this.add.sprite(300, 200, 'cardBack');
                 temp.anchor.setTo(0.5, 0.5);
                 
@@ -516,16 +505,17 @@ console.log(this.currentDealerValue);
                 retHand.onComplete.add(function()
                 {
                     this.input.enabled = true;
+                    this.nextMove = this.checkPlay(party, num);
                     
-                    if(this.standing)
+                    if(this.nextMove === 'deal' && this.standing)
                     {
-                        if(this.dealerHand.length < 3)
-                        {
-                             this.deal(false, false, true);
-                             this.checkPlay('dealer', 1);
-                             this.displayCards('dealer');
-                             this.inputEnabled = false;
-                        }
+                        this.nextMove = null;
+                        this.deal(false, false, true, 0, 1);
+                    }
+                    else if(this.nextMove === 'endGame')
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
                     }
                 }, this);
                 
@@ -559,16 +549,17 @@ console.log(this.currentDealerValue);
                 retHand.onComplete.add(function()
                 {
                     this.input.enabled = true;
-                    
-                    if(this.standing)
+                    this.nextMove = this.checkPlay(party, num, 'hand 1 call');
+
+                    if(this.nextMove === 'deal' && this.standing)
                     {
-                        if(this.dealerHand.length < 3)
-                        {
-                             this.deal(false, false, true);
-                             this.checkPlay('dealer', 1);
-                             this.displayCards('dealer');
-                             this.inputEnabled = false;
-                        }
+                        this.nextMove = null;
+                        this.deal(false, false, true, 0, 1);
+                    }
+                    else if(this.nextMove === 'endGame')
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
                     }
                 }, this);
                 
@@ -602,16 +593,17 @@ console.log(this.currentDealerValue);
                 retHand.onComplete.add(function()
                 {
                     this.input.enabled = true;
+                    this.nextMove = this.checkPlay(party, num);
                     
-                    if(this.standing)
+                    if(this.nextMove === 'deal' && this.standing)
                     {
-                        if(this.dealerHand.length < 3)
-                        {
-                             this.deal(false, false, true);
-                             this.checkPlay('dealer', 1);
-                             this.displayCards('dealer');
-                             this.inputEnabled = false;
-                        }
+                        this.nextMove = null;
+                        this.deal(false, false, true, 0, 1);
+                    }
+                    else if(this.nextMove === 'endGame')
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
                     }
                 }, this);
                 
@@ -646,6 +638,7 @@ console.log(this.currentDealerValue);
                     retHand.onComplete.add(function()
                     {
                         this.input.enabled = true;
+                        this.nextMove = this.checkPlay(party, num);
                     }, this);
                 
                     handTween.chain(backFlip);
@@ -658,6 +651,7 @@ console.log(this.currentDealerValue);
         }
         else if(party == 'player')
         {
+            console.log(this.playerCards);
             for(var i=0, len = this.playerCards.length; i<len; i++)
             {
                 if(this.playerCards[i] == undefined)
@@ -703,9 +697,10 @@ console.log(this.currentDealerValue);
                     }
                 }
             }
+            this.nextMove = this.checkPlay(party, num);
         }
     },
-    processEndGame: function()
+     processEndGame: function()
     {
         this.input.enabled=false;
         this.gameOver = true;
@@ -741,7 +736,8 @@ console.log(this.currentDealerValue);
             {
                 this.currentDealerValue += 10;
             }
-            
+            console.log(this.currentDealerValue);
+            console.log(this.currentPlayerValue);
             if(this.currentDealerValue > this.currentPlayerValue)
             {
                 this.twentyOneAnimation("Dealer Wins!", true, true, 5000, true, 2);
@@ -824,7 +820,7 @@ console.log(this.currentDealerValue);
                 this.twentyOne.destroy();
             emitters.removeAll();
             
-            if(final)
+            /*if(final)
             {
                 if(this.round > 3)
                 {
@@ -926,7 +922,7 @@ console.log(this.currentDealerValue);
         
                     this.twentyOneAnimation('Place your Bets!', true, undefined, 10000, true, 1.5);
                 }
-            }
+            }*/
         }, this);
     },
     createEmitter: function(x, y, tex, sprite, scale)
@@ -997,6 +993,7 @@ console.log(this.currentDealerValue);
             this.solidGreenChip.animations.stop();
             this.solidGreenChip.loadTexture('solidGreenChip', 1);
         }
+        
     }
 };
 /*Copyright (C) Wayside Co. - All Rights Reserved
