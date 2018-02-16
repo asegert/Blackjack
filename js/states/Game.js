@@ -162,6 +162,10 @@ Blackjack.GameState = {
             {
                 this.deal(false, false, true, 0, 1);
             }
+            else
+            {
+                this.processEndGame();
+            }
         }, this);
         this.initGame();
     },
@@ -509,7 +513,7 @@ console.log(this.currentDealerValue);
             }
             else if(this.currentPlayerValue === 11 && this.playerEleven)
             {
-                this.twentyOneAnimation('21', true, false, 5000, false, 1);
+                this.twentyOneAnimation('21', true, false, 2000, false, 1);
                 
                 return null;
             }
@@ -573,7 +577,12 @@ console.log(this.currentDealerValue);
                         this.nextMove = null;
                         this.deal(false, false, true, 0, 1);
                     }
-                    else if(this.nextMove === 'endGame')
+                    else if(this.nextMove === 'endGame' && this.standing)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
+                    }
+                    else if(this.nextMove === 'endGame' && this.playerBusted)
                     {
                         this.nextMove = null;
                         this.processEndGame();
@@ -617,7 +626,12 @@ console.log(this.currentDealerValue);
                         this.nextMove = null;
                         this.deal(false, false, true, 0, 1);
                     }
-                    else if(this.nextMove === 'endGame')
+                    else if(this.nextMove === 'endGame' && this.standing)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
+                    }
+                    else if(this.nextMove === 'endGame' && this.playerBusted)
                     {
                         this.nextMove = null;
                         this.processEndGame();
@@ -661,7 +675,12 @@ console.log(this.currentDealerValue);
                         this.nextMove = null;
                         this.deal(false, false, true, 0, 1);
                     }
-                    else if(this.nextMove === 'endGame')
+                    else if(this.nextMove === 'endGame' && this.standing)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
+                    }
+                    else if(this.nextMove === 'endGame' && this.playerBusted)
                     {
                         this.nextMove = null;
                         this.processEndGame();
