@@ -8,17 +8,16 @@ Blackjack.PreloadState = {
         this.load.setPreloadSprite(preloadProgress);
 
         this.load.image('background', 'assets/images/background.png');
-        
+        //Buttons
         this.load.image('hitMe', 'assets/images/hitMe.png');
         this.load.image('call', 'assets/images/call.png');
-        
+        //Dealer
         this.load.image('cardBack', 'assets/images/cardBack_red5.png');
         this.load.image('deck', 'assets/images/cardDeck_red5.png');
         this.load.image('dealer', 'assets/images/dealerHand.png');
         
         this.load.image('21', 'assets/images/21.png');
-        
-        
+        //Cards
         this.load.image('diamond2', 'assets/images/cardDiamonds2.png');
         this.load.image('diamond3', 'assets/images/cardDiamonds3.png');
         this.load.image('diamond4', 'assets/images/cardDiamonds4.png');
@@ -74,7 +73,7 @@ Blackjack.PreloadState = {
         this.load.image('spadeQ', 'assets/images/cardSpadesQ.png');
         this.load.image('spadeK', 'assets/images/cardSpadesK.png');
         this.load.image('spadeA', 'assets/images/cardSpadesA.png');
-        
+        //Chips
         this.load.spritesheet('blackChip', 'assets/images/blackChipSpritesheet.png', 70.4, 68, 5);
         this.load.spritesheet('greenChip', 'assets/images/greenChipSpritesheet.png', 70.4, 68, 5);
         this.load.spritesheet('blueChip', 'assets/images/blueChipSpritesheet.png', 70.4, 68, 5);
