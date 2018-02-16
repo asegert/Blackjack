@@ -6,6 +6,8 @@ Blackjack.GameState = {
         this.background = this.add.sprite(0, 0, 'background');
         this.deck = this.add.sprite(50, 200, 'deck');
         this.dealer = this.add.sprite(50, 0, 'dealer');
+        Blackjack.round = Blackjack.round || 1;
+        Blackjack.loses = Blackjack.loses || 0;
 
         this.cardArray = [
                             ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
@@ -17,40 +19,162 @@ Blackjack.GameState = {
         
         this.blackChip = this.add.button(650, 425, 'blackChip', this.chipFlip, this);
         this.blackChip.animations.add('flip');
+        this.blackChip.value = 1;
         this.blackChip.play('flip', 10, true);
+        this.add.text(670, 400, '$1', {fill: '#ffffff'});
         
         this.whiteChip = this.add.button(725, 425, 'whiteChip', this.chipFlip, this);
         this.whiteChip.animations.add('flip');
+        this.whiteChip.value = 5;
         this.whiteChip.play('flip', 12, true);
-        
-        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
-        this.greenChip.animations.add('flip');
-        this.greenChip.play('flip', 11, true);
+        this.add.text(745, 400, '$5', {fill: '#ffffff'});
         
         this.blueChip = this.add.button(800, 425, 'blueChip', this.chipFlip, this);
         this.blueChip.animations.add('flip');
+        this.blueChip.value = 10;
         this.blueChip.play('flip', 12, true);
+        this.add.text(805, 400, '$10', {fill: '#ffffff'});
+        
+        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
+        this.greenChip.animations.add('flip');
+        this.greenChip.value = 50;
+        this.greenChip.play('flip', 11, true);
+        this.add.text(880, 400, '$50', {fill: '#ffffff'});
         
         this.redChip = this.add.button(650, 500, 'redChip', this.chipFlip, this);
         this.redChip.animations.add('flip');
+        this.redChip.value = 100;
         this.redChip.play('flip', 10, true);
+        this.add.text(655, 560, '$100', {fill: '#ffffff'});
         
         this.solidWhiteChip = this.add.button(725, 500, 'solidWhiteChip', this.chipFlip, this);
         this.solidWhiteChip.animations.add('flip');
+        this.solidWhiteChip.value = 500;
         this.solidWhiteChip.play('flip', 11, true);
+        this.add.text(730, 560, '$500', {fill: '#ffffff'});
         
         this.solidBlueChip = this.add.button(800, 500, 'solidBlueChip', this.chipFlip, this);
         this.solidBlueChip.animations.add('flip');
+        this.solidBlueChip.value = 1000;
         this.solidBlueChip.play('flip', 10, true);
+        this.add.text(800, 560, '$1000', {fill: '#ffffff'});
         
         this.solidGreenChip = this.add.button(875, 500, 'solidGreenChip', this.chipFlip, this);
         this.solidGreenChip.animations.add('flip');
+        this.solidGreenChip.value = 5000;
         this.solidGreenChip.play('flip', 11, true);
+        this.add.text(875, 560, '$5000', {fill: '#ffffff'});
         
+        if(Blackjack.loses === 1)
+        {
+            this.blackChip.alpha = 1;   
+            this.whiteChip.alpha = 1;  
+            this.blueChip.alpha = 1;  
+            this.greenChip.alpha = 1; 
+            this.redChip.alpha = 0.5;  
+            this.solidWhiteChip.alpha = 0.5;
+            this.solidBlueChip.alpha = 0.5;
+            this.solidGreenChip.alpha = 0.5;
+            
+            this.blackChip.inputEnabled = true;   
+            this.whiteChip.inputEnabled = true;  
+            this.blueChip.inputEnabled = true;   
+            this.greenChip.inputEnabled = true;  
+            this.redChip.inputEnabled = false;   
+            this.solidWhiteChip.inputEnabled = false;  
+            this.solidBlueChip.inputEnabled = false;  
+            this.solidGreenChip.inputEnabled = false; 
+        }
+        else if(Blackjack.loses > 1)
+        {
+            this.blackChip.alpha = 1;   
+            this.whiteChip.alpha = 0.5;  
+            this.blueChip.alpha = 0.5;  
+            this.greenChip.alpha = 0.5; 
+            this.redChip.alpha = 0.5;  
+            this.solidWhiteChip.alpha = 0.5;
+            this.solidBlueChip.alpha = 0.5;
+            this.solidGreenChip.alpha = 0.5;
+            
+            this.blackChip.inputEnabled = true;   
+            this.whiteChip.inputEnabled = false;  
+            this.blueChip.inputEnabled = false;   
+            this.greenChip.inputEnabled = false;  
+            this.redChip.inputEnabled = false;   
+            this.solidWhiteChip.inputEnabled = false;  
+            this.solidBlueChip.inputEnabled = false;  
+            this.solidGreenChip.inputEnabled = false;  
+        }
+        else
+        {
+            this.blackChip.alpha = 1;   
+            this.whiteChip.alpha = 1;  
+            this.blueChip.alpha = 1;  
+            this.greenChip.alpha = 1; 
+            this.redChip.alpha = 1;  
+            this.solidWhiteChip.alpha = 1;
+            this.solidBlueChip.alpha = 1;
+            this.solidGreenChip.alpha = 1;
+            
+            this.blackChip.inputEnabled = true;   
+            this.whiteChip.inputEnabled = true;  
+            this.blueChip.inputEnabled = true;   
+            this.greenChip.inputEnabled = true;  
+            this.redChip.inputEnabled = true;   
+            this.solidWhiteChip.inputEnabled = true;  
+            this.solidBlueChip.inputEnabled = true;  
+            this.solidGreenChip.inputEnabled = true; 
+        }
+        
+        this.bet = this.add.text(200, 350, "Current Bet: $0", {fill: '#ffffff'});
+        this.betted = false;
+        this.betNum = 0;
+        
+        this.cardsOrig = this.cardArray;
+        
+        this.hitMe = this.add.button(50, 470, 'hitMe', function()
+        {
+            this.input.enabled = false;
+            if(!this.betted)
+                this.betted = true;
+            //If dealer has played all cards don't play another
+            if(this.dealerHand.length < 3)
+            {
+                //player always gets a card
+                this.deal(false, true, true, 1, 1);
+                this.input.enabled = false;
+            }
+            else
+            {
+                this.deal(false, true, false, 1, 0);
+            }
+            this.displayCards('player');
+        }, this);
+        
+        this.call = this.add.button(50, 535, 'call', function()
+        {
+            this.input.enabled = false;
+            this.standing = true;
+            if(!this.betted)
+                this.betted = true;
+            //deal out and end
+            if(this.dealerHand.length < 3)
+            {
+                this.deal(false, false, true, 0, 1);
+            }
+            else
+            {
+                this.processEndGame();
+            }
+        }, this);
+        this.initGame();
+    },
+    initGame: function()
+    {
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
         this.dealerHand = new Array();
-        this.playerCards = this.deal(true, false, false);
+        this.playerCards = this.deal(true, false, false, 0, 0);
         this.dealerCards = this.playerCards[1];
         this.playerCards = this.playerCards[0];
         this.gameOver = false;
@@ -61,56 +185,22 @@ Blackjack.GameState = {
         this.playerEleven = false;
         this.currentDealerValue = 0;
         this.currentPlayerValue = 0;
-        this.dealer1;
-        this.dealer2;
-        this.dealer3;
+        this.dealer1=undefined;
+        this.dealer2=undefined;
+        this.dealer3=undefined;
+        this.nextMove = null;
         
         this.input.enabled = false;
-        this.deal(false, false, true);
-        this.displayCards('dealer');
-        this.checkPlay('dealer', 1);
-        this.displayCards('player');
-        this.checkPlay('player', 2);
-        
-        this.hitMe = this.add.button(50, 470, 'hitMe', function()
-        {
-            this.input.enabled = false;
-            //If dealer has played all cards don't play another
-            if(this.dealerHand.length < 3)
-            {
-                //player always gets a card
-                this.deal(false, true, true);
-                this.displayCards('dealer');
-                this.checkPlay('dealer', 1);
-                this.input.enabled = false;
-            }
-            else
-            {
-                this.deal(false, true, false);
-            }
-            this.displayCards('player');
-            this.checkPlay('player', 1);
-        }, this);
-        
-        this.call = this.add.button(50, 535, 'call', function()
-        {
-            //deal out and end
-            if(this.dealerHand.length < 3)
-            {
-                this.standing = true;
-                this.deal(false, false, true);
-                this.checkPlay('dealer', 1);
-                this.displayCards('dealer');
-            }
-        }, this);
+        this.deal(false, true, true, 2, 1);
+        console.log(this.playerCards);
     },
     preShuffle: function()
     {
-        var initShuffle = new Array(this.cardArray.length);
+        var initShuffle = new Array(this.cardsOrig.length);
         
-        for(var i = 0, initLen = this.cardArray.length; i<initLen; i++)
+        for(var i = 0, initLen = this.cardsOrig.length; i<initLen; i++)
         {
-            initShuffle[i] = this.shuffle(this.cardArray[i], null);
+            initShuffle[i] = this.shuffle(this.cardsOrig[i], null);
         }
         
         //If the array has an odd number add the two last ones together to ensure iteration in two's in the while loop
@@ -210,29 +300,29 @@ Blackjack.GameState = {
         }
         return retArr;
     },
-    deal: function(initDeal, playerDeal, dealerDeal)
+    deal: function(initDeal, playerDeal, dealerDeal, playerNum, dealerNum)
     {
         if(initDeal)
         {
-            var player = new Array(2);
-            var dealer = new Array(this.cardArray.length - 2);
-            
+            var player = new Array(1);
+            var dealer = new Array(this.cardArray.length - 1);
+
             for(var i=0, len = this.cardArray.length; i<len; i++)
             {
-                if(i<2)
+                if(i<1)
                 {
                     player[i]=this.cardArray[i];
                 }
                 else
                 {
-                    dealer[i-2] = this.cardArray[i];
+                    dealer[i-1] = this.cardArray[i];
                 }
             }
-            
+
             var retArr = new Array(2);
             retArr[0] = player;
             retArr[1] = dealer;
-            
+
             return retArr;
         }
         else
@@ -240,28 +330,35 @@ Blackjack.GameState = {
             if(playerDeal)
             {
                 this.playerCards[this.playerCards.length] = this.dealerCards.pop();
+                this.displayCards('player', playerNum);
             }
             
             if(dealerDeal)
             {
                 this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
+                this.displayCards('dealer', dealerNum);
+                console.log(this.dealerHand);
             }
             //Call for animation flip to show card and add card to dealer total-> make appropriate move
             return null;
         }
     },
-    checkPlay: function(party, added)//fix run time with compound value
+    checkPlay: function(party, added, msg)
     {
         if(this.gameOver)
         {
-            
+            return null;
         }
+        //If dealer ifo is being checked
         else if(party == 'dealer')
         {
+            //If a card has been added increase the dealer value and check for 11
             if(added > 0)
             {
                 for(var i = 1; i<=added; i++)
                 {
+                    console.log(i);
+                    console.log(this.dealerHand);
                     this.currentDealerValue +=this.dealerHand[this.dealerHand.length-i].value;
                     
                     if(this.dealerHand[this.dealerHand.length-i].value == 1)
@@ -270,6 +367,7 @@ Blackjack.GameState = {
                     }
                 }
             }
+            //If it is unknown if a card was added or not
             else if(added === -1)
             {
                 var tempValue = 0;
@@ -289,76 +387,79 @@ Blackjack.GameState = {
             }
             
 console.log(this.currentDealerValue);
-            if(this.currentDealerValue > 21)
+            //If the dealer has busted, check if player also busted
+            if(this.currentDealerValue > 21 && !this.dealerBusted)
             {
-                console.log('over');
-                this.dealerBusted = true;
                 console.log('Bust');
-                if(this.playerBusted != true)
+                this.dealerBusted = true;
+                if(this.playerBusted)
                 {
-                    this.checkPlay('player', -1);
+                    return 'endGame';
                 }
-                else
+                return this.checkPlay('player', -1);
+                
+                //If more cards need to be displayed
+                if(this.dealerHand.length < 3)
                 {
-                    console.log('a');
-                    this.processEndGame();
+                    return 'deal';
+
                 }
+                return 'endGame';
             }
+            //If dealer hasn't busted but player has game is over
+            else if(this.playerBusted)
+            {
+                return 'endGame';
+            }
+            //If no more cards need to be dealt
             else if(this.dealerHand.length > 2 && this.currentDealerValue >= 16)
             {
-                console.log('b');
-                this.processEndGame();
+                return 'endGame';
             }
+            //If the bonus card can be used
             else if(this.dealerHand.length > 2 && this.currentDealerValue < 16)
             {
                 //If an ace is one of the cards check if adding 10 as ace is 1 or 11 will get it in the right margin, otherwise continue adding the additional card
                 if(this.dealerEleven)
                 {
-                    //If using the ace as an eleven will bust the dealer or still keep the dealer below 16
-                    if(this.currentDealerValue + 10 > 22 || this.currentDealerValue + 10 < 16)
+                    //If using the ace as an eleven will be good to end the game
+                    if(this.currentDealerValue + 10 < 22 || this.currentDealerValue + 10 > 16)
                     {
-                        this.deal(false, false, true);
-                        this.checkPlay('dealer', 1);
-                        this.displayCards('dealer');
-                        
-                        if(this.dealerHand.length > 2 && this.currentDealerValue + 10 >= 16)
-                        {
-                            console.log('i');
-                            this.processEndGame();
-                        }
+                        return 'endGame';
                     }
+                    //If the 11 cannot be used, but more cards can be dealt do so
+                    else if(this.dealerHand.length < 3)
+                    {
+                        return 'deal';
+                    }
+                    this.dealerBusted = true;
+                    return 'endGame';
                 }
-                else if(this.playerBusted)
+                //If there is no 11 and one more can be displayed
+                else if(this.dealerHand.length < 3)
                 {
-                    console.log('c');
-                    this.processEndGame();
+                    return 'deal';
                 }
                 else
                 {
-                    this.deal(false, false, true);
-                    this.checkPlay('dealer', 1);
-                    this.displayCards('dealer');
+                    return 'endGame';
                 }
             }
-            else if(this.playerBusted)
+            else if(this.dealerHand.length < 3)
             {
-                console.log('d');
-                this.processEndGame();
+                return 'deal';
             }
- /*           else if(this.standing && this.dealerHand.length < 3)
-            {
-                this.deal(false, false, true);
-                this.checkPlay('dealer', 1);
-                this.displayCards('dealer');
-            }*/
+            return null;
         }
         else if(party == 'player')
         {
-            //If the player has not 'hit me', player will only have two cards so both must be checked
+            //If the player has a new card
             if(added > 0)
             {
                 for(var i = 1; i<=added; i++)
                 {
+                    console.log(added);
+                    console.log(this.playerCards);
                     this.currentPlayerValue += this.playerCards[this.playerCards.length-i].value;   
             
                     if(this.playerCards[this.playerCards.length-i].value == 1)
@@ -367,6 +468,7 @@ console.log(this.currentDealerValue);
                     }
                 }
             }
+            //If a card may or may not have been added
             else if(added === -1)
             {
                 var tempValue = 0;
@@ -378,6 +480,7 @@ console.log(this.currentDealerValue);
                     {
                         this.playerEleven = true;
                     }
+                    console.log(tempValue);
                 }
                 if(tempValue > this.currentPlayerValue)
                 {
@@ -385,57 +488,36 @@ console.log(this.currentDealerValue);
                 }
             }
             
-            if(this.currentPlayerValue > 21)
+ console.log("player: "+this.currentPlayerValue);  
+ 
+            if(this.currentPlayerValue > 21 && !this.playerBusted)
             {
                 this.playerBusted = true;
                 console.log('Bust');
-                if(this.dealerBusted != true)
+                if(this.dealerBusted)
                 {
-                    this.checkPlay('dealer', -1);
+                    return 'endGame';
                 }
-                else
-                {
-                    console.log('e');
-                    this.processEndGame();
-                }
-            }
-            else if(this.currentPlayerValue === 21)
-            {
-                this.twentyOneAnimation('21', true, false, 5000, false, 1);
-                while(this.dealerHand.length < 3)
-                {
-                    this.deal(false, false, true);
-                    this.displayCards('dealer');
-                    this.checkPlay('dealer', 1);
-                }
-                //Check if higher than dealer
-                if(!this.gameOver)
-                {
-                    console.log('f');
-                    this.processEndGame();
-                }
-            }
-            else if(this.currentPlayerValue === 11 && this.playerEleven)
-            {
-                this.twentyOneAnimation('21', true, false, 5000, false, 1);
-                while(this.dealerHand.length < 3)
-                {
-                    this.deal(false, false, true);
-                    this.displayCards('dealer');
-                    this.checkPlay('dealer', 1);
-                }
-                //Check if higher than dealer
-                if(!this.gameOver)
-                {
-                    console.log('g');
-                    this.processEndGame();
-                }
+                
+                return this.checkPlay('dealer', -1);
             }
             else if(this.dealerBusted)
             {
-                console.log('h');
-                this.processEndGame();
+                return 'endGame';
             }
+            else if(this.currentPlayerValue === 21)
+            {
+                this.twentyOneAnimation('21', true, false, 2000, false, 1);
+                
+                return null;
+            }
+            else if(this.currentPlayerValue === 11 && this.playerEleven)
+            {
+                this.twentyOneAnimation('21', true, false, 2000, false, 1);
+                
+                return null;
+            }
+            return null;
         }
     },
     createCards: function(cardArr)
@@ -451,10 +533,12 @@ console.log(this.currentDealerValue);
         }
         return cardArr;
     },
-    displayCards: function(party)
+    displayCards: function(party, num)
     {
         if(party == 'dealer')
         {
+            console.log('ok');
+            console.log(this.dealerHand[1]);
             if(this.dealer1 != undefined)
             {
                 this.dealer1.destroy();
@@ -467,9 +551,9 @@ console.log(this.currentDealerValue);
             {
                 this.dealer3.destroy();
             }
-            
             if(this.dealerHand[0] != undefined && this.dealerHand[0].sprite === null)
             {
+                console.log('k');
                 var temp = this.add.sprite(300, 200, 'cardBack');
                 temp.anchor.setTo(0.5, 0.5);
                 
@@ -486,16 +570,22 @@ console.log(this.currentDealerValue);
                 retHand.onComplete.add(function()
                 {
                     this.input.enabled = true;
+                    this.nextMove = this.checkPlay(party, num);
                     
-                    if(this.standing)
+                    if(this.nextMove === 'deal' && this.standing)
                     {
-                        if(this.dealerHand.length < 3)
-                        {
-                             this.deal(false, false, true);
-                             this.checkPlay('dealer', 1);
-                             this.displayCards('dealer');
-                             this.inputEnabled = false;
-                        }
+                        this.nextMove = null;
+                        this.deal(false, false, true, 0, 1);
+                    }
+                    else if(this.nextMove === 'endGame' && this.standing)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
+                    }
+                    else if(this.nextMove === 'endGame' && this.playerBusted)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
                     }
                 }, this);
                 
@@ -529,16 +619,22 @@ console.log(this.currentDealerValue);
                 retHand.onComplete.add(function()
                 {
                     this.input.enabled = true;
-                    
-                    if(this.standing)
+                    this.nextMove = this.checkPlay(party, num, 'hand 1 call');
+
+                    if(this.nextMove === 'deal' && this.standing)
                     {
-                        if(this.dealerHand.length < 3)
-                        {
-                             this.deal(false, false, true);
-                             this.checkPlay('dealer', 1);
-                             this.displayCards('dealer');
-                             this.inputEnabled = false;
-                        }
+                        this.nextMove = null;
+                        this.deal(false, false, true, 0, 1);
+                    }
+                    else if(this.nextMove === 'endGame' && this.standing)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
+                    }
+                    else if(this.nextMove === 'endGame' && this.playerBusted)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
                     }
                 }, this);
                 
@@ -572,16 +668,22 @@ console.log(this.currentDealerValue);
                 retHand.onComplete.add(function()
                 {
                     this.input.enabled = true;
+                    this.nextMove = this.checkPlay(party, num);
                     
-                    if(this.standing)
+                    if(this.nextMove === 'deal' && this.standing)
                     {
-                        if(this.dealerHand.length < 3)
-                        {
-                             this.deal(false, false, true);
-                             this.checkPlay('dealer', 1);
-                             this.displayCards('dealer');
-                             this.inputEnabled = false;
-                        }
+                        this.nextMove = null;
+                        this.deal(false, false, true, 0, 1);
+                    }
+                    else if(this.nextMove === 'endGame' && this.standing)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
+                    }
+                    else if(this.nextMove === 'endGame' && this.playerBusted)
+                    {
+                        this.nextMove = null;
+                        this.processEndGame();
                     }
                 }, this);
                 
@@ -616,6 +718,7 @@ console.log(this.currentDealerValue);
                     retHand.onComplete.add(function()
                     {
                         this.input.enabled = true;
+                        this.nextMove = this.checkPlay(party, num);
                     }, this);
                 
                     handTween.chain(backFlip);
@@ -628,11 +731,16 @@ console.log(this.currentDealerValue);
         }
         else if(party == 'player')
         {
+            console.log(this.playerCards);
             for(var i=0, len = this.playerCards.length; i<len; i++)
             {
                 if(this.playerCards[i] == undefined)
                 {
                     break;
+                }
+                else if(this.playerCards[i].sprite != null)
+                {
+                    
                 }
                 else
                 {
@@ -669,22 +777,27 @@ console.log(this.currentDealerValue);
                     }
                 }
             }
+            this.nextMove = this.checkPlay(party, num);
         }
     },
-    processEndGame: function()
+     processEndGame: function()
     {
         this.input.enabled=false;
         this.gameOver = true;
+        this.betNum = 0;
+        this.bet.setText("Current Bet: $0");
         
         if(this.playerBusted && this.dealerBusted)
         {
             this.twentyOneAnimation('Both Bust! \nTie!', true, true, 5000, true, 2);
             console.log('Both Bust! \nTie!');
+            Blackjack.loses++;
         }
         else if(this.playerBusted)
         {
             this.twentyOneAnimation('Player Busted. \nDealer Wins!', true, true, 5000, true, 2);
             console.log('Player Busted. \nDealer Wins!');
+            Blackjack.loses++;
         }
         else if(this.dealerBusted)
         {
@@ -703,11 +816,13 @@ console.log(this.currentDealerValue);
             {
                 this.currentDealerValue += 10;
             }
-            
+            console.log(this.currentDealerValue);
+            console.log(this.currentPlayerValue);
             if(this.currentDealerValue > this.currentPlayerValue)
             {
                 this.twentyOneAnimation("Dealer Wins!", true, true, 5000, true, 2);
                 console.log("Dealer Wins!");
+                this.loses++;
             }
             else if( this.currentDealerValue < this.currentPlayerValue)
             {
@@ -718,6 +833,7 @@ console.log(this.currentDealerValue);
             {
                 this.twentyOneAnimation("Tie!", true, true, 5000, true, 2);
                 console.log("Tie!");
+                this.loses++;
             }
             else
             {
@@ -725,9 +841,14 @@ console.log(this.currentDealerValue);
                 console.log("Player Wins By Default!");
             }
         }
+        Blackjack.round++;
     },
     twentyOneAnimation: function(tex, destroy, final, time, string, scale)
     {
+        if(this.twentyOne != undefined)
+        {
+            this.twentyOne.destroy();
+        }
         var emitters = this.add.group();
         
         if(final)
@@ -744,6 +865,10 @@ console.log(this.currentDealerValue);
             emitters.add(emit4);
             emitters.add(emit5);
         }
+        else if (final === undefined)
+        {
+            
+        }
         else
         {
             console.log(emitters);
@@ -758,22 +883,35 @@ console.log(this.currentDealerValue);
         }
         if(string)
         {
-            var twentyOne = this.add.text(this.world.centerX, this.world.centerY, tex);
+            this.twentyOne = this.add.text(this.world.centerX, this.world.centerY, tex);
         }
         else
         {
-            var twentyOne = this.add.sprite(this.world.centerX, this.world.centerY, tex);
+            this.twentyOne = this.add.sprite(this.world.centerX, this.world.centerY, tex);
         }
         
-        twentyOne.anchor.setTo(0.5, 0.5);
-        twentyOne.scale.setTo(0, 0);
-        var tween = this.add.tween(twentyOne.scale).to({x: scale, y: scale}, time, "Linear", true);
-        this.world.bringToTop(twentyOne);
+        this.twentyOne.anchor.setTo(0.5, 0.5);
+        this.twentyOne.scale.setTo(0, 0);
+        var tween = this.add.tween(this.twentyOne.scale).to({x: scale, y: scale}, time, "Linear", true);
+        this.world.bringToTop(this.twentyOne);
         tween.onComplete.add(function()
         {
             if(destroy)
-                twentyOne.destroy();
+                this.twentyOne.destroy();
             emitters.removeAll();
+            
+            if(final)
+            {
+                console.log('round: '+Blackjack.round);
+                if(Blackjack.round > 3)
+                {
+                    document.getElementById('form1').submit;
+                }
+                else
+                {
+                    this.state.start('Game');
+                }
+            }
         }, this);
     },
     createEmitter: function(x, y, tex, sprite, scale)
@@ -784,6 +922,7 @@ console.log(this.currentDealerValue);
             emitter.makeParticles(tex, [0, 1, 2, 3, 4]);
         else
             emitter.makeParticles(tex);
+        
         emitter.minParticleScale = scale;
         emitter.maxParticleScale = scale;
         
@@ -795,6 +934,8 @@ console.log(this.currentDealerValue);
     {
         var x = chip.x;
         var y = chip.y;
+        this.betNum += chip.value;
+        this.bet.setText("Current Bet: $"+this.betNum);
         
         this.world.bringToTop(chip);
             
@@ -816,6 +957,32 @@ console.log(this.currentDealerValue);
     },
     update: function ()
     {
+        if(this.betted)
+        {
+            this.blackChip.animations.stop();
+            this.blackChip.loadTexture('blackChip', 1);
+            
+            this.whiteChip.animations.stop();
+            this.whiteChip.loadTexture('whiteChip', 1);
+            
+            this.blueChip.animations.stop();
+            this.blueChip.loadTexture('blueChip', 1);
+            
+            this.greenChip.animations.stop();
+            this.greenChip.loadTexture('greenChip', 1);
+            
+            this.redChip.animations.stop();
+            this.redChip.loadTexture('redChip', 1);
+            
+            this.solidWhiteChip.animations.stop();
+            this.solidWhiteChip.loadTexture('solidWhiteChip', 1);
+            
+            this.solidBlueChip.animations.stop();
+            this.solidBlueChip.loadTexture('solidBlueChip', 1);
+            
+            this.solidGreenChip.animations.stop();
+            this.solidGreenChip.loadTexture('solidGreenChip', 1);
+        }
         
     }
 };
