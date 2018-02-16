@@ -342,6 +342,12 @@ Blackjack.GameState = {
             var retArr = new Array(2);
             retArr[0] = player;
             retArr[1] = dealer;
+            
+            //Audio for the deal
+            Blackjack.music.volume = 0.3;
+            var sound = this.add.audio('card');
+            sound.play();
+            Blackjack.music.volume = 1;
 
             return retArr;
         }
@@ -351,6 +357,11 @@ Blackjack.GameState = {
             //If the player is being dealt to
             if(playerDeal)
             {
+                //Audio for the deal
+                Blackjack.music.volume = 0.3;
+                var sound = this.add.audio('card');
+                sound.play();
+                Blackjack.music.volume = 1;
                 //Deal the card
                 this.playerCards[this.playerCards.length] = this.dealerCards.pop();
                 //Display the card
@@ -359,6 +370,11 @@ Blackjack.GameState = {
             //If the dealer is being dealt to
             if(dealerDeal)
             {
+                //Audio for the deal
+                Blackjack.music.volume = 0.3;
+                var sound = this.add.audio('card');
+                sound.play();
+                Blackjack.music.volume = 1;
                 //Deal the card
                 this.dealerHand[this.dealerHand.length] = this.dealerCards.pop();
                 //Display the card
@@ -904,6 +920,11 @@ Blackjack.GameState = {
                 console.log("Player Wins By Default!");
             }
         }
+        //Applause sound
+        Blackjack.music.volume = 0.3;
+        var sound = this.add.audio('applause');
+        sound.play();
+        Blackjack.music.volume = 1;
         //Raise the round
         Blackjack.round++;
     },
@@ -1008,6 +1029,11 @@ Blackjack.GameState = {
     //Flips the chip to the dealer when 'bet'
     chipFlip: function(chip)
     {
+        //Audio for the chip flip
+        Blackjack.music.volume = 0.3;
+        var sound = this.add.audio('chip');
+        sound.play();
+        Blackjack.music.volume = 1;
         //Save original chip coordinates
         var x = chip.x;
         var y = chip.y;
@@ -1037,7 +1063,14 @@ Blackjack.GameState = {
         reset3.chain(reset4);
         scale1.start();
         //Move the chip as the scaling starts
-        this.add.tween(chip).to({x: 50, y: -50}, 2000, "Linear", true);
+        var moveTween = this.add.tween(chip).to({x: 50, y: -50}, 2000, "Linear", true);
+        moveTween.onComplete.add(function()
+        {
+            Blackjack.music.volume = 0.3;
+            var sound = this.add.audio('chip');
+            sound.play();
+            Blackjack.music.volume = 1;
+        }, this);
     },
     update: function ()
     {

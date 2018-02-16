@@ -3,6 +3,9 @@ var Blackjack = Blackjack || {};
 Blackjack.StoryState = {
     create: function ()
     {
+        Blackjack.music = this.add.audio('background');
+        Blackjack.music.play('', 0, 1, true);
+        
         this.add.sprite(0, 0, 'story');
         var start = this.add.button(485, 440, 'start', function()
         {

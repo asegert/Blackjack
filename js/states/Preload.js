@@ -84,6 +84,11 @@ Blackjack.PreloadState = {
         this.load.spritesheet('solidGreenChip', 'assets/images/solidGreenChipSpritesheet.png', 70.4, 68, 5);
         this.load.spritesheet('solidBlueChip', 'assets/images/solidBlueChipSpritesheet.png', 70.4, 68, 5);
         this.load.spritesheet('solidWhiteChip', 'assets/images/solidWhiteChipSpritesheet.png', 70.4, 68, 5);
+        //Audio
+        this.load.audio('background', ['assets/audio/blackjackBackground.mp3','assets/audio/blackjackBackground.m4A', 'assets/audio/blackjackBackground.ogg']);
+        this.load.audio('card', ['assets/audio/cardFlip.mp3','assets/audio/cardFlip.m4A', 'assets/audio/cardFlip.ogg']);
+        this.load.audio('chip', ['assets/audio/pokerChip.mp3','assets/audio/assets/audio/pokerChip.m4A', 'assets/audio/assets/audio/pokerChip.ogg']);
+        this.load.audio('applause', ['assets/audio/applause.mp3','assets/audio/assets/audio/applause.m4A', 'assets/audio/assets/audio/applause.ogg']);
     },
     create: function ()
     {
