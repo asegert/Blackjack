@@ -19,119 +19,6 @@ Blackjack.GameState = {
                          ];
         //Create the cards using the prefab
         this.cardArray = this.createCards(this.cardArray);
-        //Chips for betting
-        this.blackChip = this.add.button(650, 425, 'blackChip', this.chipFlip, this);
-        this.blackChip.animations.add('flip');
-        this.blackChip.value = 1;
-        this.blackChip.play('flip', 10, true);
-        this.add.text(670, 400, '$1', {fill: '#ffffff'});
-        
-        this.whiteChip = this.add.button(725, 425, 'whiteChip', this.chipFlip, this);
-        this.whiteChip.animations.add('flip');
-        this.whiteChip.value = 5;
-        this.whiteChip.play('flip', 12, true);
-        this.add.text(745, 400, '$5', {fill: '#ffffff'});
-        
-        this.blueChip = this.add.button(800, 425, 'blueChip', this.chipFlip, this);
-        this.blueChip.animations.add('flip');
-        this.blueChip.value = 10;
-        this.blueChip.play('flip', 12, true);
-        this.add.text(805, 400, '$10', {fill: '#ffffff'});
-        
-        this.greenChip = this.add.button(875, 425, 'greenChip', this.chipFlip, this);
-        this.greenChip.animations.add('flip');
-        this.greenChip.value = 50;
-        this.greenChip.play('flip', 11, true);
-        this.add.text(880, 400, '$50', {fill: '#ffffff'});
-        
-        this.redChip = this.add.button(650, 500, 'redChip', this.chipFlip, this);
-        this.redChip.animations.add('flip');
-        this.redChip.value = 100;
-        this.redChip.play('flip', 10, true);
-        this.add.text(655, 560, '$100', {fill: '#ffffff'});
-        
-        this.solidWhiteChip = this.add.button(725, 500, 'solidWhiteChip', this.chipFlip, this);
-        this.solidWhiteChip.animations.add('flip');
-        this.solidWhiteChip.value = 500;
-        this.solidWhiteChip.play('flip', 11, true);
-        this.add.text(730, 560, '$500', {fill: '#ffffff'});
-        
-        this.solidBlueChip = this.add.button(800, 500, 'solidBlueChip', this.chipFlip, this);
-        this.solidBlueChip.animations.add('flip');
-        this.solidBlueChip.value = 1000;
-        this.solidBlueChip.play('flip', 10, true);
-        this.add.text(800, 560, '$1000', {fill: '#ffffff'});
-        
-        this.solidGreenChip = this.add.button(875, 500, 'solidGreenChip', this.chipFlip, this);
-        this.solidGreenChip.animations.add('flip');
-        this.solidGreenChip.value = 5000;
-        this.solidGreenChip.play('flip', 11, true);
-        this.add.text(875, 560, '$5000', {fill: '#ffffff'});
-        //Change the chip display based on the number of loses
-        if(Blackjack.loses === 1)
-        {
-            this.blackChip.alpha = 1;   
-            this.whiteChip.alpha = 1;  
-            this.blueChip.alpha = 1;  
-            this.greenChip.alpha = 1; 
-            this.redChip.alpha = 0.5;  
-            this.solidWhiteChip.alpha = 0.5;
-            this.solidBlueChip.alpha = 0.5;
-            this.solidGreenChip.alpha = 0.5;
-            
-            this.blackChip.inputEnabled = true;   
-            this.whiteChip.inputEnabled = true;  
-            this.blueChip.inputEnabled = true;   
-            this.greenChip.inputEnabled = true;  
-            this.redChip.inputEnabled = false;   
-            this.solidWhiteChip.inputEnabled = false;  
-            this.solidBlueChip.inputEnabled = false;  
-            this.solidGreenChip.inputEnabled = false; 
-        }
-        else if(Blackjack.loses > 1)
-        {
-            this.blackChip.alpha = 1;   
-            this.whiteChip.alpha = 0.5;  
-            this.blueChip.alpha = 0.5;  
-            this.greenChip.alpha = 0.5; 
-            this.redChip.alpha = 0.5;  
-            this.solidWhiteChip.alpha = 0.5;
-            this.solidBlueChip.alpha = 0.5;
-            this.solidGreenChip.alpha = 0.5;
-            
-            this.blackChip.inputEnabled = true;   
-            this.whiteChip.inputEnabled = false;  
-            this.blueChip.inputEnabled = false;   
-            this.greenChip.inputEnabled = false;  
-            this.redChip.inputEnabled = false;   
-            this.solidWhiteChip.inputEnabled = false;  
-            this.solidBlueChip.inputEnabled = false;  
-            this.solidGreenChip.inputEnabled = false;  
-        }
-        else
-        {
-            this.blackChip.alpha = 1;   
-            this.whiteChip.alpha = 1;  
-            this.blueChip.alpha = 1;  
-            this.greenChip.alpha = 1; 
-            this.redChip.alpha = 1;  
-            this.solidWhiteChip.alpha = 1;
-            this.solidBlueChip.alpha = 1;
-            this.solidGreenChip.alpha = 1;
-            
-            this.blackChip.inputEnabled = true;   
-            this.whiteChip.inputEnabled = true;  
-            this.blueChip.inputEnabled = true;   
-            this.greenChip.inputEnabled = true;  
-            this.redChip.inputEnabled = true;   
-            this.solidWhiteChip.inputEnabled = true;  
-            this.solidBlueChip.inputEnabled = true;  
-            this.solidGreenChip.inputEnabled = true; 
-        }
-        //Bet indicators
-        this.bet = this.add.text(200, 350, "Current Bet: $0", {fill: '#ffffff'});
-        this.betted = false;
-        this.betNum = 0;
         //Stores the card array for computing
         this.cardsOrig = this.cardArray;
         //Hit me button
@@ -139,49 +26,18 @@ Blackjack.GameState = {
         {
             //Do not allow input until action is complete
             this.input.enabled = false;
-            //Do not allow betting
-            if(!this.betted)
-                this.betted = true;
-            //If dealer has played all cards don't play another
-            if(this.dealerHand.length < 3)
-            {
-                //player always gets a card
-                this.deal(false, true, true, 1, 1);
-                this.input.enabled = false;
-            }
-            else
-            {
-                //If dealer has no more cards only add to the player
-                this.deal(false, true, false, 1, 0);
-            }
-            //Display the player cards
-            this.displayCards('player');
+            this.dealerHand.addCard(this.dealerCards.pop());
+            this.playerHand.addCard(this.dealerCards.pop());
         }, this);
         //Button to stand with the cards already on the board
         this.call = this.add.button(50, 535, 'call', function()
         {
             //Do not allow input until action is complete
             this.input.enabled = false;
-            //Boolean indicating the player has 'stood'
-            this.standing = true;
-            //Do not allow betting
-            if(!this.betted)
-                this.betted = true;
-            //deal out and end
-            if(this.dealerHand.length < 3)
-            {
-                this.deal(false, false, true, 0, 1);
-            }
-            //If player 'stands' once dealer has been dealt out, just end
-            else
-            {
-                this.processEndGame();
-            }
+            this.dealerHand.completeHand([this.dealerCards.pop(), this.dealerCards.pop(), this.dealerCards.pop(), this.dealerCards.pop()]);
         }, this);
         //Initialize the game
         this.initGame();
-        //Tell player to place bets
-        this.twentyOneAnimation("Place your Bets", true, undefined, 3000, true, 1.5);
     },
     initGame: function()
     {
@@ -320,7 +176,7 @@ Blackjack.GameState = {
     },
     deal: function(initDeal, playerDeal, dealerDeal, playerNum, dealerNum)
     {
-        //If it si the initial deal
+        //If it is the initial deal
         if(initDeal)
         {
             //Deal most into the dealer stack and the first one into the player stack
@@ -392,7 +248,7 @@ Blackjack.GameState = {
         {
             return null;
         }
-        //If dealer ifo is being checked
+        //If dealer info is being checked
         else if(party == 'dealer')
         {
             //If a card has been added increase the dealer value and check for 11
@@ -849,7 +705,7 @@ Blackjack.GameState = {
                 }
             }
             //Check the next move based on the new player card, mainly to update value
-            this.nextMove = this.checkPlay(party, num);
+            this.checkPlay(party, num);
         }
     },
     processEndGame: function()
@@ -1001,6 +857,7 @@ Blackjack.GameState = {
                 if(Blackjack.round > 3)
                 {
                     document.getElementById('form1').submit;
+                    console.log('gameOver');
                 }
                 else
                 {
@@ -1025,83 +882,6 @@ Blackjack.GameState = {
         emitter.start(false, 5000, 20);
         
         return emitter;
-    },
-    //Flips the chip to the dealer when 'bet'
-    chipFlip: function(chip)
-    {
-        //Audio for the chip flip
-        Blackjack.music.volume = 0.3;
-        var sound = this.add.audio('chip');
-        sound.play();
-        Blackjack.music.volume = 1;
-        //Save original chip coordinates
-        var x = chip.x;
-        var y = chip.y;
-        //Add the chip's value to the total bet
-        this.betNum += chip.value;
-        //Update the bet text
-        this.bet.setText("Current Bet: $"+this.betNum);
-        //Bring the chip to the top
-        this.world.bringToTop(chip);
-        //Scale the chip up as it 'gets closer to the player'    
-        var scale1 = this.add.tween(chip.scale).to({x: 1.5, y: 1.5}, 1000, "Linear");
-        //Scale back down as it falls to the dealer
-        var scale2 = this.add.tween(chip.scale).to({x: 0.5, y: 0.5}, 1000, "Linear");
-        //Turn off the chip's visibility
-        var reset1 = this.add.tween(chip).to({alpha: 0}, 0, "Linear");
-        //Move the chip back
-        var reset2 = this.add.tween(chip).to({x: x, y: y}, 0, "Linear");
-        //Reset the scale
-        var reset3 = this.add.tween(chip.scale).to({x: 1, y: 1}, 0, "Linear");
-        //Turn the chip visibility back on
-        var reset4 = this.add.tween(chip).to({alpha: 1}, 0, "Linear");
-        //Chain the animations
-        scale1.chain(scale2);
-        scale2.chain(reset1);
-        reset1.chain(reset2);
-        reset2.chain(reset3);
-        reset3.chain(reset4);
-        scale1.start();
-        //Move the chip as the scaling starts
-        var moveTween = this.add.tween(chip).to({x: 50, y: -50}, 2000, "Linear", true);
-        moveTween.onComplete.add(function()
-        {
-            Blackjack.music.volume = 0.3;
-            var sound = this.add.audio('chip');
-            sound.play();
-            Blackjack.music.volume = 1;
-        }, this);
-    },
-    update: function ()
-    {
-        //If betting has ended, stop the animations and load the chip texture from the spritesheet at index 1
-        if(this.betted)
-        {
-            this.blackChip.animations.stop();
-            this.blackChip.loadTexture('blackChip', 1);
-            
-            this.whiteChip.animations.stop();
-            this.whiteChip.loadTexture('whiteChip', 1);
-            
-            this.blueChip.animations.stop();
-            this.blueChip.loadTexture('blueChip', 1);
-            
-            this.greenChip.animations.stop();
-            this.greenChip.loadTexture('greenChip', 1);
-            
-            this.redChip.animations.stop();
-            this.redChip.loadTexture('redChip', 1);
-            
-            this.solidWhiteChip.animations.stop();
-            this.solidWhiteChip.loadTexture('solidWhiteChip', 1);
-            
-            this.solidBlueChip.animations.stop();
-            this.solidBlueChip.loadTexture('solidBlueChip', 1);
-            
-            this.solidGreenChip.animations.stop();
-            this.solidGreenChip.loadTexture('solidGreenChip', 1);
-        }
-        
     }
 };
 /*Copyright (C) Wayside Co. - All Rights Reserved
