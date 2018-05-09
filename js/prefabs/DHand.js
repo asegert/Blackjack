@@ -21,7 +21,10 @@ Blackjack.DHand = function(state) {
          this.c2.anchor.setTo(0.5, 0.5);
          this.c3 = this.state.add.sprite(660, 200, 'cardBack');
          this.c3.anchor.setTo(0.5, 0.5);
-         this.sprites = [this.c1, this.c2, this.c3];
+         this.c4 = this.state.add.sprite(840, 200, 'cardBack');
+         this.c4.anchor.setTo(0.5, 0.5);
+         this.c4.alpha=0;
+         this.sprites = [this.c1, this.c2, this.c3, this.c4];
      };
      Blackjack.DHand.prototype.addCard = function(card)
      {
@@ -74,7 +77,6 @@ Blackjack.DHand = function(state) {
      };
      Blackjack.DHand.prototype.flip = function(index)
      {
-         //840
          var temp = this.sprites[index];
          this.sprites[index] = this.hand[index];
          this.sprites[index].addSprite(temp.x, temp.y);
