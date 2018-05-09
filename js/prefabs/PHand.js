@@ -18,8 +18,8 @@ Blackjack.PHand = function(state) {
      Blackjack.PHand.prototype.addCard = function(card)
      {
          this.hand[this.hand.length] = card;
-         this.recalculateValue(card);
          this.deal(this.hand.length-1);
+         return this.recalculateValue(card);
      };
      Blackjack.PHand.prototype.recalculateValue = function(card)
      {
@@ -32,11 +32,13 @@ Blackjack.PHand = function(state) {
          if(this.handValue>21)
          {
              this.isBusted = true;
+             return true;
          }
          else if(this.ace && (this.handValue+10)>21)
          {
              this.ace = false;
          }
+         return false;
      };
     Blackjack.PHand.prototype.deal = function(index)
     {

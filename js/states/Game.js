@@ -32,8 +32,13 @@ Blackjack.GameState = {
         {
             //Do not allow input until action is complete
             this.input.enabled = false;
-            this.dealerHand.addCard(this.cardArray.pop());
-            this.playerHand.addCard(this.cardArray.pop());
+            var dBust = this.dealerHand.addCard(this.cardArray.pop());
+            var pBust = this.playerHand.addCard(this.cardArray.pop());
+            
+            if(dBust || pBust)
+            {
+                this.endRound();
+            }
         }, this);
         //Button to stand with the cards already on the board
         this.call = this.add.button(50, 535, 'call', function()
@@ -41,6 +46,8 @@ Blackjack.GameState = {
             //Do not allow input until action is complete
             this.input.enabled = false;
             this.dealerHand.completeHand([this.cardArray.pop(), this.cardArray.pop(), this.cardArray.pop(), this.cardArray.pop()]);
+            
+            this.endRound();
         }, this);
         //Initialize the game
         this.initGame();
@@ -432,6 +439,48 @@ Blackjack.GameState = {
         Blackjack.music.volume = 1;
         //Raise the round
         Blackjack.round++;
+    },
+    endRound: function()
+    {
+        if(this.dealerHand.isBusted && this.playerHand.isBusted)
+        {
+            console.log('bothBust');
+        }
+        else if(this.dealerHand.isBusted)
+        {
+            console.log('dealerbust');
+        }
+        else if(this.playerHand.isBusted)
+        {
+            console.log('playerbust');
+        }
+        else
+        {
+            var player = this.playerHand.handValue;
+            var dealer = this.dealerHand.handValue;
+            
+            if(this.playerHand.ace)
+            {
+                player+=10;
+            }
+            if(this.dealerHand.ace)
+            {
+                dealer+=10;
+            }
+            
+            if(player>dealer)
+            {
+                console.log('player win');
+            }
+            else if(dealer>player)
+            {
+                console.log('dealer win');
+            }
+            else
+            {
+                console.log('tie');
+            }
+        }
     },
     //Called when a player reaches 21, game ends, or to display information
     twentyOneAnimation: function(tex, destroy, final, time, string, scale)

@@ -31,8 +31,8 @@ Blackjack.DHand = function(state) {
          if((this.hand.length<4 && this.addBonus())||(this.hand.length<3 && !this.addBonus()))
          {
              this.hand[this.hand.length] = card;
-             this.recalculateValue(card);
-             this.flip(this.hand.length-1)
+             this.flip(this.hand.length-1);
+             return this.recalculateValue(card);
          }
      };
     Blackjack.DHand.prototype.completeHand = function(card)
@@ -61,11 +61,13 @@ Blackjack.DHand = function(state) {
          if(this.handValue>21)
          {
              this.isBusted = true;
+             return true;
          }
          else if(this.ace && (this.handValue+10)>21)
          {
              this.ace = false;
          }
+         return false;
      };
      Blackjack.DHand.prototype.addBonus = function()
      {
