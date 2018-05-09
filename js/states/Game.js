@@ -9,7 +9,6 @@ Blackjack.GameState = {
         this.dealer = this.add.sprite(50, 0, 'dealer');
         //Constants
         Blackjack.round = Blackjack.round || 1;
-        Blackjack.loses = Blackjack.loses || 0;
         //Deck of cards
         this.cardArray = [
                             ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
@@ -26,15 +25,15 @@ Blackjack.GameState = {
         {
             //Do not allow input until action is complete
             this.input.enabled = false;
-            this.dealerHand.addCard(this.dealerCards.pop());
-            this.playerHand.addCard(this.dealerCards.pop());
+            this.dealerHand.addCard(this.cardArray.pop());
+            this.playerHand.addCard(this.cardArray.pop());
         }, this);
         //Button to stand with the cards already on the board
         this.call = this.add.button(50, 535, 'call', function()
         {
             //Do not allow input until action is complete
             this.input.enabled = false;
-            this.dealerHand.completeHand([this.dealerCards.pop(), this.dealerCards.pop(), this.dealerCards.pop(), this.dealerCards.pop()]);
+            this.dealerHand.completeHand([this.cardArray.pop(), this.cardArray.pop(), this.cardArray.pop(), this.cardArray.pop()]);
         }, this);
         //Initialize the game
         this.initGame();
@@ -44,27 +43,16 @@ Blackjack.GameState = {
         //Variables, initialize cards, set defaults
         this.cardArray = this.preShuffle();
         this.cardArray = this.cardArray[0];
-        this.dealerHand = new Array();
-        this.playerCards = this.deal(true, false, false, 0, 0);
-        this.dealerCards = this.playerCards[1];
-        this.playerCards = this.playerCards[0];
-        this.gameOver = false;
-        this.standing = false;
-        this.dealerBusted = false;
-        this.playerBusted = false;
-        this.dealerEleven = false;
-        this.playerEleven = false;
-        this.currentDealerValue = 0;
-        this.currentPlayerValue = 0;
-        this.dealer1=undefined;
-        this.dealer2=undefined;
-        this.dealer3=undefined;
-        this.nextMove = null;
-        
+        this.dealerHand = new Blackjack.DHand(this);
+        this.dealerHand.init();
+        this.playerHand = new Blackjack.PHand(this);
+        this.playerHand.init();
         //Turn off input until initial deal is complete
         this.input.enabled = false;
         //Initial deal -> 2 cards to the player, one to the dealer
-        this.deal(false, true, true, 2, 1);
+        this.playerHand.addCard(this.cardArray.pop());
+        this.playerHand.addCard(this.cardArray.pop());
+        this.dealerHand.addCard(this.cardArray.pop());
     },
     preShuffle: function()
     {
