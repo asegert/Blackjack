@@ -17,6 +17,12 @@ Blackjack.PHand = function(state) {
      };
      Blackjack.PHand.prototype.addCard = function(card)
      {
+         //Audio for the deal
+         Blackjack.music.volume = 0.3;
+         var sound = this.state.add.audio('card');
+         sound.play();
+         Blackjack.music.volume = 1;
+         
          this.hand[this.hand.length] = card;
          this.deal(this.hand.length-1);
          return this.recalculateValue(card);
@@ -37,6 +43,23 @@ Blackjack.PHand = function(state) {
          else if(this.ace && (this.handValue+10)>21)
          {
              this.ace = false;
+         }
+         
+         if(this.handValue === 21 || (this.ace && (this.handValue+10)===21))
+         {
+             var twentyOne = this.state.add.sprite(500, 350, "21");
+             twentyOne.scale.setTo(0.1, 0.1);
+             twentyOne.anchor.setTo(0.5, 0.5);
+             var tween1 = this.state.add.tween(twentyOne.scale).to({x: 1, y: 1}, 1000, "Linear", true);
+             tween1.onComplete.add(function()
+             {
+                 this.state.world.bringToTop(twentyOne);
+                 this.game.time.events.add(Phaser.Timer.SECOND * 1.5, function()
+                 {
+                     this.state.add.tween(twentyOne.scale).to({x: 0.1, y: 0.1}, 1000, "Linear", true);
+                     this.state.add.tween(twentyOne).to({x: 100, y: 450}, 1000, "Linear", true);
+                 }, this);
+             }, this);
          }
          return false;
      };

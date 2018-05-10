@@ -28,14 +28,25 @@ Blackjack.DHand = function(state) {
      };
      Blackjack.DHand.prototype.addCard = function(card)
      {
-         if((this.hand.length<4 && this.addBonus())||(this.hand.length<3 && !this.addBonus()))
+         //Audio for the deal
+         Blackjack.music.volume = 0.3;
+         var sound = this.state.add.audio('card');
+         sound.play();
+         Blackjack.music.volume = 1;
+         
+         if (this.hand.length<3)
          {
              this.hand[this.hand.length] = card;
              this.flip(this.hand.length-1);
              return this.recalculateValue(card);
          }
+         if(this.hand.length===3 && this.addBonus())
+         {
+             this.hand[3] = this.state.cardArray.pop();
+             this.recalculateValue(this.hand[3]);
+         }
      };
-    Blackjack.DHand.prototype.completeHand = function(card)
+     Blackjack.DHand.prototype.completeHand = function(card)
      {
          for(var i = this.hand.length, len = 3; i<len; i++)
          {
@@ -43,12 +54,20 @@ Blackjack.DHand = function(state) {
              this.recalculateValue(card[i]);
              this.flip(i)
          }
-        
-        if(this.addBonus())
-        {
-            this.hand[3] = card[3];
-            this.recalculateValue();
-        }
+         
+         if(this.addBonus())
+         {
+             this.sprites[3].alpha=1;
+             this.hand[3] = card[3];
+             this.recalculateValue(this.hand[3]);
+             this.flip(3);
+         }
+         
+         //Audio for the deal
+         Blackjack.music.volume = 0.3;
+         var sound = this.state.add.audio('card');
+         sound.play();
+         Blackjack.music.volume = 1;
      };
      Blackjack.DHand.prototype.recalculateValue = function(card)
      {

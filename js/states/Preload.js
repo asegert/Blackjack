@@ -17,6 +17,10 @@ Blackjack.PreloadState = {
         this.load.image('cardBack', 'assets/images/Blackjack_cardBack_red5.png');
         this.load.image('deck', 'assets/images/Blackjack_cardDeck_red5.png');
         this.load.image('dealer', 'assets/images/Blackjack_dealerHand.png');
+        //Coupons
+        this.load.image('coupon1', 'assets/images/coupon1.png');
+        this.load.image('coupon2', 'assets/images/coupon2.png');
+        this.load.image('coupon3', 'assets/images/coupon3.png');
         
         this.load.image('21', 'assets/images/Blackjack_21.png');
         //Cards

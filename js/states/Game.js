@@ -1,10 +1,3 @@
-/*
-//Audio for the deal
-            Blackjack.music.volume = 0.3;
-            var sound = this.add.audio('card');
-            sound.play();
-            Blackjack.music.volume = 1;
-*/
 var Blackjack = Blackjack || {};
 
 Blackjack.GameState = {
@@ -14,6 +7,8 @@ Blackjack.GameState = {
         this.background = this.add.sprite(0, 0, 'background');
         this.deck = this.add.sprite(50, 200, 'deck');
         this.dealer = this.add.sprite(50, 0, 'dealer');
+        //Prize Array
+        this.prizes = ['coupon1', 'coupon2', 'coupon3'];
         //Constants
         Blackjack.round = Blackjack.round || 1;
         //Deck of cards
@@ -364,101 +359,31 @@ Blackjack.GameState = {
         //Return the array of prefab cards
         return cardArr;
     },
-    processEndGame: function()
+    endRound: function()
     {
-        //Stop game play as game is ending
-        this.input.enabled=false;
-        //Game is over
-        this.gameOver = true;
-        
-        //If both bust -> tie, losses goes up so player can only bet lower values
-        if(this.playerBusted && this.dealerBusted)
-        {
-            this.twentyOneAnimation('Both Bust! \nTie!', true, true, 5000, true, 2);
-            console.log('Both Bust! \nTie!');
-            Blackjack.loses++;
-        }
-        //If only the player busts, dealer wins, losses goes up so player can only bet lower values
-        else if(this.playerBusted)
-        {
-            this.twentyOneAnimation('Player Busted. \nDealer Wins!', true, true, 5000, true, 2);
-            console.log('Player Busted. \nDealer Wins!');
-            Blackjack.loses++;
-        }
-        //If only the dealer busts, player wins
-        else if(this.dealerBusted)
-        {
-            this.twentyOneAnimation('Dealer Busted. \nPlayer Wins!', true, true, 5000, true, 2);
-            console.log('Dealer Busted. \nPlayer Wins!');
-        }
-        //If no one has busted
-        else
-        {
-            //Check if player has higher score than dealer, caluculating is 11's play a role
-            if(this.playerEleven && this.currentPlayerValue + 10 < 22)
-            {
-                this.currentPlayerValue += 10;
-            }
-            
-            if(this.dealerEleven && this.currentDealerValue + 10 < 22)
-            {
-                this.currentDealerValue += 10;
-            }
-            
-            //If the dealer has more than the player, dealer wins, losses goes up so player can only bet lower values
-            if(this.currentDealerValue > this.currentPlayerValue)
-            {
-                this.twentyOneAnimation("Dealer Wins!", true, true, 5000, true, 2);
-                console.log("Dealer Wins!");
-                Blackjack.loses++;
-            }
-            //If the player has more than the player, player wins
-            else if( this.currentDealerValue < this.currentPlayerValue)
-            {
-                this.twentyOneAnimation("Player Wins!", true, true, 5000, true, 2);
-                console.log("Player Wins!");
-            }
-            //If the player and the dealer have the same amount, they tie, losses goes up so player can only bet lower values
-            else if(this.currentDealerValue === this.currentPlayerValue)
-            {
-                this.twentyOneAnimation("Tie!", true, true, 5000, true, 2);
-                console.log("Tie!");
-                Blackjack.loses++;
-            }
-            //If any other case the player wins by default, should never occur
-            else
-            {
-                this.twentyOneAnimation("Player Wins!", true, true, 5000, true, 2);
-                console.log("Player Wins By Default!");
-            }
-        }
         //Applause sound
         Blackjack.music.volume = 0.3;
         var sound = this.add.audio('applause');
         sound.play();
         Blackjack.music.volume = 1;
-        //Raise the round
-        Blackjack.round++;
-    },
-    endRound: function()
-    {
+        //Check for busts
         if(this.dealerHand.isBusted && this.playerHand.isBusted)
         {
-            console.log('bothBust');
+            this.twentyOneAnimation('Both Bust! \nTie!', true, true, 5000, true, 2);
         }
         else if(this.dealerHand.isBusted)
         {
-            console.log('dealerbust');
+            this.twentyOneAnimation('Dealer Busted. \nPlayer Wins!', true, true, 5000, true, 2);
         }
         else if(this.playerHand.isBusted)
         {
-            console.log('playerbust');
+            this.twentyOneAnimation('Player Busted. \nDealer Wins!', true, true, 5000, true, 2);
         }
         else
         {
             var player = this.playerHand.handValue;
             var dealer = this.dealerHand.handValue;
-            
+            //Check if an ace is at play
             if(this.playerHand.ace)
             {
                 player+=10;
@@ -467,18 +392,18 @@ Blackjack.GameState = {
             {
                 dealer+=10;
             }
-            
+            //Check for a winner
             if(player>dealer)
             {
-                console.log('player win');
+                this.twentyOneAnimation("Player Wins!", true, true, 5000, true, 2);
             }
             else if(dealer>player)
             {
-                console.log('dealer win');
+                this.twentyOneAnimation("Dealer Wins!", true, true, 5000, true, 2);
             }
             else
             {
-                console.log('tie');
+                this.twentyOneAnimation("Tie!", true, true, 5000, true, 2);
             }
         }
     },
@@ -551,16 +476,27 @@ Blackjack.GameState = {
             //If final is being used start a new round -> up to 3
             if(final)
             {
-                console.log('round: '+Blackjack.round);
-                if(Blackjack.round > 3)
+                //Display the prize
+                var text = this.add.text(480, 150, "You Win", {fill: '#000000', font: '124px'});
+                var coupon = this.add.sprite(500, 300, this.prizes[Blackjack.round-1]);
+                text.anchor.setTo(0.5, 0.5);
+                coupon.anchor.setTo(0.5, 0.5);
+                text.scale.setTo(0.1, 0.1);
+                coupon.scale.setTo(0.1, 0.1);
+                this.add.tween(text.scale).to({x: 1, y:1}, 2000, "Linear", true);
+                this.add.tween(coupon.scale).to({x: 1, y:1}, 2000, "Linear", true);
+                this.game.time.events.add(Phaser.Timer.SECOND * 3, function()
                 {
-                    document.getElementById('form1').submit;
-                    console.log('gameOver');
-                }
-                else
-                {
-                    this.state.start('Game');
-                }
+                    if(Blackjack.round > 2)
+                    {
+                        document.getElementById('form1').submit;
+                    }
+                    else
+                    {
+                        Blackjack.round++;
+                        this.state.start('Game');
+                    }
+                }, this);
             }
         }, this);
     },
