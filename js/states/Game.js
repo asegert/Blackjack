@@ -65,191 +65,20 @@ Blackjack.GameState = {
     shuffle: function(array)
     {
         var returnArray = new Array();
-        
+        //Randomly pull cards from the card array to shuffle the cards for game play
         for(var i=0, len=array.length; i<len; i++)
         {
             var rand = Math.floor(Math.random() * len);
-            
+            //Create the cards
             var card = new Blackjack.Card(this);
             card.init(array[rand])
             returnArray[returnArray.length] = card;
+            //Remove the used card from the card array
             array.splice(rand, 1);
             len--;
         }
+        //Return the shuffled deck
         return returnArray;
-    },
-    //Check for actions needed to be taken based on cards
-    checkPlay: function(party, added)
-    {
-        //If the game is over do nothing
-        if(this.gameOver)
-        {
-            return null;
-        }
-        //If dealer info is being checked
-        else if(party == 'dealer')
-        {
-            //If a card has been added increase the dealer value and check for 11
-            if(added > 0)
-            {
-                for(var i = 1; i<=added; i++)
-                {
-                    this.currentDealerValue +=this.dealerHand[this.dealerHand.length-i].value;
-                    
-                    if(this.dealerHand[this.dealerHand.length-i].value == 1)
-                    {
-                        this.dealerEleven = true;
-                    }
-                }
-            }
-            //If it is unknown if a card was added or not
-            else if(added === -1)
-            {
-                var tempValue = 0;
-                for(var i = 0; i<this.dealerHand.length; i++)
-                {
-                    tempValue +=this.dealerHand[i].value;
-                    
-                    if(this.dealerHand[i].value == 1)
-                    {
-                        this.dealerEleven = true;
-                    }
-                }
-                if(tempValue > this.currentDealerValue)
-                {
-                    this.currentDealerValue = tempValue;
-                }
-            }
-            
-            //If the dealer has busted, check if player also busted
-            if(this.currentDealerValue > 21 && !this.dealerBusted)
-            {
-                this.dealerBusted = true;
-                if(this.playerBusted)
-                {
-                    return 'endGame';
-                }
-                return this.checkPlay('player', -1);
-                
-                //If more cards need to be displayed
-                if(this.dealerHand.length < 3)
-                {
-                    return 'deal';
-
-                }
-                return 'endGame';
-            }
-            //If dealer hasn't busted but player has game is over
-            else if(this.playerBusted)
-            {
-                return 'endGame';
-            }
-            //If no more cards need to be dealt
-            else if(this.dealerHand.length > 2 && this.currentDealerValue >= 16)
-            {
-                return 'endGame';
-            }
-            //If the bonus card can be used
-            else if(this.dealerHand.length > 2 && this.currentDealerValue < 16)
-            {
-                //If an ace is one of the cards check if adding 10 as ace is 1 or 11 will get it in the right margin, otherwise continue adding the additional card
-                if(this.dealerEleven)
-                {
-                    //If using the ace as an eleven will be good to end the game
-                    if(this.currentDealerValue + 10 < 22 || this.currentDealerValue + 10 > 16)
-                    {
-                        return 'endGame';
-                    }
-                    //If the 11 cannot be used, but more cards can be dealt do so
-                    else if(this.dealerHand.length < 3)
-                    {
-                        return 'deal';
-                    }
-                    this.dealerBusted = true;
-                    return 'endGame';
-                }
-                //If there is no 11 and one more can be displayed
-                else if(this.dealerHand.length < 3)
-                {
-                    return 'deal';
-                }
-                else
-                {
-                    return 'endGame';
-                }
-            }
-            else if(this.dealerHand.length < 3)
-            {
-                return 'deal';
-            }
-            return null;
-        }
-        else if(party == 'player')
-        {
-            //If the player has a new card
-            if(added > 0)
-            {
-                for(var i = 1; i<=added; i++)
-                {
-                    this.currentPlayerValue += this.playerCards[this.playerCards.length-i].value;   
-            
-                    if(this.playerCards[this.playerCards.length-i].value == 1)
-                    {
-                        this.playerEleven = true;
-                    }
-                }
-            }
-            //If a card may or may not have been added
-            else if(added === -1)
-            {
-                var tempValue = 0;
-                for(var i = 0; i<this.playerCards.length; i++)
-                {
-                    tempValue +=this.playerCards[i].value;
-                    
-                    if(this.playerCards[i].value == 1)
-                    {
-                        this.playerEleven = true;
-                    }
-                }
-                if(tempValue > this.currentPlayerValue)
-                {
-                    this.currentPlayerValue = tempValue;
-                }
-            }
- 
-            //Check if player busted and end game if dealer has as well or do a double check on the dealer
-            if(this.currentPlayerValue > 21 && !this.playerBusted)
-            {
-                this.playerBusted = true;
-                if(this.dealerBusted)
-                {
-                    return 'endGame';
-                }
-                
-                return this.checkPlay('dealer', -1);
-            }
-            //If the dealer busted, but the player didn't end the game the player has won
-            else if(this.dealerBusted)
-            {
-                return 'endGame';
-            }
-            //If the player gets 21 exactly
-            else if(this.currentPlayerValue === 21)
-            {
-                this.twentyOneAnimation('21', true, false, 2000, false, 1);
-                
-                return null;
-            }
-            //If the player gets 21 exactly via an 11
-            else if(this.currentPlayerValue === 11 && this.playerEleven)
-            {
-                this.twentyOneAnimation('21', true, false, 2000, false, 1);
-                
-                return null;
-            }
-            return null;
-        }
     },
     createCards: function(cardArr)
     {
