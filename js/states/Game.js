@@ -13,10 +13,10 @@ Blackjack.GameState = {
         Blackjack.round = Blackjack.round || 1;
         //Deck of cards
         this.cardArray = [
-                            ['diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA'],
-                            ['club2', 'club3', 'club4', 'club5', 'club6', 'club7', 'club8', 'club9', 'club10', 'clubJ', 'clubQ', 'clubK', 'clubA'],
-                            ['heart2', 'heart3', 'heart4', 'heart5', 'heart6', 'heart7', 'heart8', 'heart9', 'heart10', 'heartJ', 'heartQ', 'heartK', 'heartA'],
-                            ['spade2', 'spade3', 'spade4', 'spade5', 'spade6', 'spade7', 'spade8', 'spade9', 'spade10', 'spadeJ', 'spadeQ', 'spadeK', 'spadeA']
+                          'diamond2', 'diamond3', 'diamond4', 'diamond5', 'diamond6', 'diamond7', 'diamond8', 'diamond9', 'diamond10', 'diamondJ', 'diamondQ', 'diamondK', 'diamondA', 
+                          'club2', 'club3', 'club4', 'club5', 'club6', 'club7', 'club8', 'club9', 'club10', 'clubJ', 'clubQ', 'clubK', 'clubA',
+                          'heart2', 'heart3', 'heart4', 'heart5', 'heart6', 'heart7', 'heart8', 'heart9', 'heart10', 'heartJ', 'heartQ', 'heartK', 'heartA',
+                          'spade2', 'spade3', 'spade4', 'spade5', 'spade6', 'spade7', 'spade8', 'spade9', 'spade10', 'spadeJ', 'spadeQ', 'spadeK', 'spadeA'
                          ];
         //Create the cards using the prefab
         this.cardArray = this.createCards(this.cardArray);
@@ -50,8 +50,7 @@ Blackjack.GameState = {
     initGame: function()
     {
         //Variables, initialize cards, set defaults
-        this.cardArray = this.preShuffle();
-        this.cardArray = this.cardArray[0];
+        this.cardArray = this.shuffle(this.cardArray);
         this.dealerHand = new Blackjack.DHand(this);
         this.dealerHand.init();
         this.playerHand = new Blackjack.PHand(this);
@@ -63,113 +62,20 @@ Blackjack.GameState = {
         this.playerHand.addCard(this.cardArray.pop());
         this.dealerHand.addCard(this.cardArray.pop());
     },
-    preShuffle: function()
+    shuffle: function(array)
     {
-        //Create an array to be filled
-        var initShuffle = new Array(this.cardsOrig.length);
+        var returnArray = new Array();
         
-        //Fill with all the cards
-        for(var i = 0, initLen = this.cardsOrig.length; i<initLen; i++)
+        for(var i=0, len=array.length; i<len; i++)
         {
-            initShuffle[i] = this.shuffle(this.cardsOrig[i], null);
-        }
-        
-        //If the array has an odd number add the two last ones together to ensure iteration in two's in the while loop
-        if(initShuffle.length > 1 && initShuffle.length % 2 != 0)
-        {
-            var tempArr = new Array(initShuffle.length-1);
+            var rand = Math.floor(Math.random() * len);
             
-            for(var k = 0, remLen = initShuffle.length-1; k<remLen; k++)
-            {
-                if(k+1 == remLen)
-                {
-                    tempArr[k] = this.shuffle(initShuffle[k], initShuffle[k+1]);
-                }
-                else
-                {
-                    tempArr[k] = initShuffle[k];
-                }
-            }
-            initShuffle = tempArr;
+            var card = new Blackjack.Card(this);
+            returnArray[returnArray.length] = card;
+            array.splice(rand, 1);
+            len--;
         }
-        
-        //While there are two potential combinations shuffle them
-        //Due to the if statement catch above the array will be either a multiple of 2 or only 1 array by the time it reaches this loop
-        //The loop completes when only one array is present
-        while(initShuffle.length % 2 == 0)
-        {
-            var secondShuffle = new Array();
-            
-            for(var j = 0, secLen = initShuffle.length/2; j<secLen; j++)
-            {
-                secondShuffle[secondShuffle.length] = this.shuffle(initShuffle[(j * 2)], initShuffle[(j * 2 + 1)]);
-            }
-            initShuffle = secondShuffle;
-        }
-        //Return shuffled cards
-        return initShuffle;
-    },
-    shuffle: function(arr1, arr2)
-    {
-        var retArr = new Array();
-        var used = new Array(arr1.length);
-        
-        //If only one array needs mixed
-        if(arr2 == null)
-        {
-            for(var i=0, len = used.length; i<len; i++)
-            {
-                used[i] = false;
-            }
-            
-            for(var j=0; j<len; j++)
-            {
-                var rand = Math.floor(Math.random() * len);
-                
-                if(used[rand])
-                {
-                    j--;
-                }
-                else
-                {
-                    used[rand] = true;
-                    retArr[retArr.length] = arr1[rand];
-                }
-            }
-        }
-        //Two shuffled arrays need combined
-        else
-        {
-            var used = new Array(arr1.length+arr2.length);
-            
-            for(var i=0, len = used.length; i<len; i++)
-            {
-                used[i] = false;
-            }
-            
-            for(var j=0; j<len; j++)
-            {
-                var rand = Math.floor(Math.random() * len);
-                
-                if(used[rand])
-                {
-                    j--;
-                }
-                else
-                {
-                    used[rand] = true;
-                    if(rand>=arr1.length)
-                    {
-                        retArr[retArr.length] = arr2[rand-arr1.length];
-                    }
-                    else
-                    {
-                        retArr[retArr.length] = arr1[rand];
-                    }
-                }
-            }
-        }
-        return retArr;
+        return returnArray;
     },
     //Check for actions needed to be taken based on cards
     checkPlay: function(party, added)
