@@ -71,6 +71,7 @@ Blackjack.GameState = {
             var rand = Math.floor(Math.random() * len);
             
             var card = new Blackjack.Card(this);
+            card.init(array[rand])
             returnArray[returnArray.length] = card;
             array.splice(rand, 1);
             len--;
